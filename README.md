@@ -1,36 +1,33 @@
-# Validate XML Names and Qualified Names
+Utilities for determining whether characters belong to character classes defined
+by the XML specs.
 
-This package simply tells you whether or not a string matches the [`Name`](http://www.w3.org/TR/xml/#NT-Name) or [`QName`](http://www.w3.org/TR/xml-names/#NT-QName) productions in the XML Namespaces specification. We use it for implementing the [validate](https://dom.spec.whatwg.org/#validate) algorithm in jsdom, but you can use it for whatever you want.
+## Organization
 
-## Usage
+It used to be that the library was contained in a single file and you could just
+import/require/what-have-you the `xmlchars` module. However, that setup did not
+work well for people who cared about code optimization. Importing `xmlchars`
+meant importing *all* of the library and because of the way the code was
+generated there was no way to shake the resulting code tree.
 
-This package's main module's default export takes a string and will return an object of the form `{ success, error }`, where `success` is a boolean and if it is `false`, then `error` is a string containing some hint as to where the match went wrong.
+Different modules cover different standards. At the time this documentation was
+last updated, we had:
 
-```js
-"use strict":
-var xnv = require("xml-name-validator");
-var assert = require("assert");
+* `xmlchars/xml/1.0/ed5` which covers XML 1.0 edition 5.
+* `xmlchars/xml/1.0/ed4` which covers XML 1.0 edition 4.
+* `xmlchars/xml/1.1/ed2` which covers XML 1.0 edition 2.
+* `xmlchars/xmlns/1.0/ed3` which covers XML Namespaces 1.0 edition 3.
 
-// Will return { success: true, error: undefined }
-xnv.name("x");
-xnv.name(":");
-xnv.name("a:0");
-xnv.name("a:b:c");
+## Features
 
-// Will return { success: false, error: <an explanatory string> }
-xnv.name("\\");
-xnv.name("'");
-xnv.name("0");
-xnv.name("a!");
+The "things" each module contains can be categorized as follows:
 
-// Will return { success: true, error: undefined }
-xnv.qname("x");
-xnv.qname("a0");
-xnv.qname("a:b");
+1. "Fragments": these are parts and pieces of regular expressions that
+correspond to the productions defined in the standard that the module
+covers. You'd use these to *build regular expressions*.
 
-// Will return { success: false, error: <an explanatory string> }
-xnv.qname(":a");
-xnv.qname(":b");
-xnv.qname("a:b:c");
-xnv.qname("a:0");
-```
+2. Regular expressions that correspond to the productions defined in the
+standard that the module covers.
+
+3. Lists: these are arrays of characters that correspond to the productions.
+
+4. Functions that test code points to verify whether they fit a production.
