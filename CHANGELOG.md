@@ -1,88 +1,100 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [16.2.0](https://www.github.com/yargs/yargs/compare/v16.1.1...v16.2.0) (2020-12-05)
-
-
-### Features
-
-* command() now accepts an array of modules ([f415388](https://www.github.com/yargs/yargs/commit/f415388cc454d02786c65c50dd6c7a0cf9d8b842))
+### [5.0.8](https://www.github.com/yargs/y18n/compare/v5.0.7...v5.0.8) (2021-04-07)
 
 
 ### Bug Fixes
 
-* add package.json to module exports ([#1818](https://www.github.com/yargs/yargs/issues/1818)) ([d783a49](https://www.github.com/yargs/yargs/commit/d783a49a7f21c9bbd4eec2990268f3244c4d5662)), closes [#1817](https://www.github.com/yargs/yargs/issues/1817)
+* **deno:** force modern release for Deno ([b1c215a](https://www.github.com/yargs/y18n/commit/b1c215aed714bee5830e76de3e335504dc2c4dab))
 
-### [16.1.1](https://www.github.com/yargs/yargs/compare/v16.1.0...v16.1.1) (2020-11-15)
-
-
-### Bug Fixes
-
-* expose helpers for legacy versions of Node.js ([#1801](https://www.github.com/yargs/yargs/issues/1801)) ([107deaa](https://www.github.com/yargs/yargs/commit/107deaa4f68b7bc3f2386041e1f4fe0272b29c0a))
-* **deno:** get yargs working on deno@1.5.x ([#1799](https://www.github.com/yargs/yargs/issues/1799)) ([cb01c98](https://www.github.com/yargs/yargs/commit/cb01c98c44e30f55c2dc9434caef524ae433d9a4))
-
-## [16.1.0](https://www.github.com/yargs/yargs/compare/v16.0.3...v16.1.0) (2020-10-15)
-
-
-### Features
-
-* expose hideBin helper for CJS ([#1768](https://www.github.com/yargs/yargs/issues/1768)) ([63e1173](https://www.github.com/yargs/yargs/commit/63e1173bb47dc651c151973a16ef659082a9ae66))
+### [5.0.7](https://www.github.com/yargs/y18n/compare/v5.0.6...v5.0.7) (2021-04-07)
 
 
 ### Bug Fixes
 
-* **deno:** update types for deno ^1.4.0 ([#1772](https://www.github.com/yargs/yargs/issues/1772)) ([0801752](https://www.github.com/yargs/yargs/commit/080175207d281be63edf90adfe4f0568700b0bf5))
-* **exports:** node 13.0-13.6 require a string fallback ([#1776](https://www.github.com/yargs/yargs/issues/1776)) ([b45c43a](https://www.github.com/yargs/yargs/commit/b45c43a5f64b565c3794f9792150eaeec4e00b69))
-* **modules:** module path was incorrect ([#1759](https://www.github.com/yargs/yargs/issues/1759)) ([95a4a0a](https://www.github.com/yargs/yargs/commit/95a4a0ac573cfe158e6e4bc8c8682ebd1644a198))
-* **positional:** positional strings no longer drop decimals ([#1761](https://www.github.com/yargs/yargs/issues/1761)) ([e1a300f](https://www.github.com/yargs/yargs/commit/e1a300f1293ad821c900284616337f080b207980))
-* make positionals in -- count towards validation ([#1752](https://www.github.com/yargs/yargs/issues/1752)) ([eb2b29d](https://www.github.com/yargs/yargs/commit/eb2b29d34f1a41e0fd6c4e841960e5bfc329dc3c))
+* **deno:** force release for deno ([#121](https://www.github.com/yargs/y18n/issues/121)) ([d3f2560](https://www.github.com/yargs/y18n/commit/d3f2560e6cedf2bfa2352e9eec044da53f9a06b2))
 
-### [16.0.3](https://www.github.com/yargs/yargs/compare/v16.0.2...v16.0.3) (2020-09-10)
+### [5.0.6](https://www.github.com/yargs/y18n/compare/v5.0.5...v5.0.6) (2021-04-05)
 
 
 ### Bug Fixes
 
-* move yargs.cjs to yargs to fix Node 10 imports ([#1747](https://www.github.com/yargs/yargs/issues/1747)) ([5bfb85b](https://www.github.com/yargs/yargs/commit/5bfb85b33b85db8a44b5f7a700a8e4dbaf022df0))
+* **webpack:** skip readFileSync if not defined ([#117](https://www.github.com/yargs/y18n/issues/117)) ([6966fa9](https://www.github.com/yargs/y18n/commit/6966fa91d2881cc6a6c531e836099e01f4da1616))
 
-### [16.0.2](https://www.github.com/yargs/yargs/compare/v16.0.1...v16.0.2) (2020-09-09)
-
-
-### Bug Fixes
-
-* **typescript:** yargs-parser was breaking @types/yargs ([#1745](https://www.github.com/yargs/yargs/issues/1745)) ([2253284](https://www.github.com/yargs/yargs/commit/2253284b233cceabd8db677b81c5bf1755eef230))
-
-### [16.0.1](https://www.github.com/yargs/yargs/compare/v16.0.0...v16.0.1) (2020-09-09)
+### [5.0.5](https://www.github.com/yargs/y18n/compare/v5.0.4...v5.0.5) (2020-10-25)
 
 
 ### Bug Fixes
 
-* code was not passed to process.exit ([#1742](https://www.github.com/yargs/yargs/issues/1742)) ([d1a9930](https://www.github.com/yargs/yargs/commit/d1a993035a2f76c138460052cf19425f9684b637))
+* address prototype pollution issue ([#108](https://www.github.com/yargs/y18n/issues/108)) ([a9ac604](https://www.github.com/yargs/y18n/commit/a9ac604abf756dec9687be3843e2c93bfe581f25))
 
-## [16.0.0](https://www.github.com/yargs/yargs/compare/v15.4.2...v16.0.0) (2020-09-09)
+### [5.0.4](https://www.github.com/yargs/y18n/compare/v5.0.3...v5.0.4) (2020-10-16)
+
+
+### Bug Fixes
+
+* **exports:** node 13.0 and 13.1 require the dotted object form _with_ a string fallback ([#105](https://www.github.com/yargs/y18n/issues/105)) ([4f85d80](https://www.github.com/yargs/y18n/commit/4f85d80dbaae6d2c7899ae394f7ad97805df4886))
+
+### [5.0.3](https://www.github.com/yargs/y18n/compare/v5.0.2...v5.0.3) (2020-10-16)
+
+
+### Bug Fixes
+
+* **exports:** node 13.0-13.6 require a string fallback ([#103](https://www.github.com/yargs/y18n/issues/103)) ([e39921e](https://www.github.com/yargs/y18n/commit/e39921e1017f88f5d8ea97ddea854ffe92d68e74))
+
+### [5.0.2](https://www.github.com/yargs/y18n/compare/v5.0.1...v5.0.2) (2020-10-01)
+
+
+### Bug Fixes
+
+* **deno:** update types for deno ^1.4.0 ([#100](https://www.github.com/yargs/y18n/issues/100)) ([3834d9a](https://www.github.com/yargs/y18n/commit/3834d9ab1332f2937c935ada5e76623290efae81))
+
+### [5.0.1](https://www.github.com/yargs/y18n/compare/v5.0.0...v5.0.1) (2020-09-05)
+
+
+### Bug Fixes
+
+* main had old index path ([#98](https://www.github.com/yargs/y18n/issues/98)) ([124f7b0](https://www.github.com/yargs/y18n/commit/124f7b047ba9596bdbdf64459988304e77f3de1b))
+
+## [5.0.0](https://www.github.com/yargs/y18n/compare/v4.0.0...v5.0.0) (2020-09-05)
 
 
 ### ⚠ BREAKING CHANGES
 
-* tweaks to ESM/Deno API surface: now exports yargs function by default; getProcessArgvWithoutBin becomes hideBin; types now exported for Deno.
-* find-up replaced with escalade; export map added (limits importable files in Node >= 12); yarser-parser@19.x.x (new decamelize/camelcase implementation).
-* **usage:** single character aliases are now shown first in help output
-* rebase helper is no longer provided on yargs instance.
-* drop support for EOL Node 8 (#1686)
+* exports maps are now used, which modifies import behavior.
+* drops Node 6 and 4. begin following Node.js LTS schedule (#89)
 
 ### Features
 
-* adds strictOptions() ([#1738](https://www.github.com/yargs/yargs/issues/1738)) ([b215fba](https://www.github.com/yargs/yargs/commit/b215fba0ed6e124e5aad6cf22c8d5875661c63a3))
-* **helpers:** rebase, Parser, applyExtends now blessed helpers ([#1733](https://www.github.com/yargs/yargs/issues/1733)) ([c7debe8](https://www.github.com/yargs/yargs/commit/c7debe8eb1e5bc6ea20b5ed68026c56e5ebec9e1))
-* adds support for ESM and Deno ([#1708](https://www.github.com/yargs/yargs/issues/1708)) ([ac6d5d1](https://www.github.com/yargs/yargs/commit/ac6d5d105a75711fe703f6a39dad5181b383d6c6))
-* drop support for EOL Node 8 ([#1686](https://www.github.com/yargs/yargs/issues/1686)) ([863937f](https://www.github.com/yargs/yargs/commit/863937f23c3102f804cdea78ee3097e28c7c289f))
-* i18n for ESM and Deno ([#1735](https://www.github.com/yargs/yargs/issues/1735)) ([c71783a](https://www.github.com/yargs/yargs/commit/c71783a5a898a0c0e92ac501c939a3ec411ac0c1))
-* tweaks to API surface based on user feedback ([#1726](https://www.github.com/yargs/yargs/issues/1726)) ([4151fee](https://www.github.com/yargs/yargs/commit/4151fee4c33a97d26bc40de7e623e5b0eb87e9bb))
-* **usage:** single char aliases first in help ([#1574](https://www.github.com/yargs/yargs/issues/1574)) ([a552990](https://www.github.com/yargs/yargs/commit/a552990c120646c2d85a5c9b628e1ce92a68e797))
+* add support for ESM and Deno [#95](https://www.github.com/yargs/y18n/issues/95)) ([4d7ae94](https://www.github.com/yargs/y18n/commit/4d7ae94bcb42e84164e2180366474b1cd321ed94))
+
+
+### Build System
+
+* drops Node 6 and 4. begin following Node.js LTS schedule ([#89](https://www.github.com/yargs/y18n/issues/89)) ([3cc0c28](https://www.github.com/yargs/y18n/commit/3cc0c287240727b84eaf1927f903612ec80f5e43))
+
+### 4.0.1 (2020-10-25)
 
 
 ### Bug Fixes
 
-* **yargs:** add missing command(module) signature ([#1707](https://www.github.com/yargs/yargs/issues/1707)) ([0f81024](https://www.github.com/yargs/yargs/commit/0f810245494ccf13a35b7786d021b30fc95ecad5)), closes [#1704](https://www.github.com/yargs/yargs/issues/1704)
+* address prototype pollution issue ([#108](https://www.github.com/yargs/y18n/issues/108)) ([a9ac604](https://www.github.com/yargs/y18n/commit/7de58ca0d315990cdb38234e97fc66254cdbcd71))
 
-[Older CHANGELOG Entries](https://github.com/yargs/yargs/blob/master/docs/CHANGELOG-historical.md)
+## [4.0.0](https://github.com/yargs/y18n/compare/v3.2.1...v4.0.0) (2017-10-10)
+
+
+### Bug Fixes
+
+* allow support for falsy values like 0 in tagged literal ([#45](https://github.com/yargs/y18n/issues/45)) ([c926123](https://github.com/yargs/y18n/commit/c926123))
+
+
+### Features
+
+* **__:** added tagged template literal support ([#44](https://github.com/yargs/y18n/issues/44)) ([0598daf](https://github.com/yargs/y18n/commit/0598daf))
+
+
+### BREAKING CHANGES
+
+* **__:** dropping Node 0.10/Node 0.12 support

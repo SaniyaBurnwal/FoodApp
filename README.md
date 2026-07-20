@@ -1,204 +1,127 @@
-# yallist
+# y18n
 
-Yet Another Linked List
+[![NPM version][npm-image]][npm-url]
+[![js-standard-style][standard-image]][standard-url]
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
-There are many doubly-linked list implementations like it, but this
-one is mine.
+The bare-bones internationalization library used by yargs.
 
-For when an array would be too big, and a Map can't be iterated in
-reverse order.
+Inspired by [i18n](https://www.npmjs.com/package/i18n).
 
+## Examples
 
-[![Build Status](https://travis-ci.org/isaacs/yallist.svg?branch=master)](https://travis-ci.org/isaacs/yallist) [![Coverage Status](https://coveralls.io/repos/isaacs/yallist/badge.svg?service=github)](https://coveralls.io/github/isaacs/yallist)
+_simple string translation:_
 
-## basic usage
+```js
+const __ = require('y18n')().__;
 
-```javascript
-var yallist = require('yallist')
-var myList = yallist.create([1, 2, 3])
-myList.push('foo')
-myList.unshift('bar')
-// of course pop() and shift() are there, too
-console.log(myList.toArray()) // ['bar', 1, 2, 3, 'foo']
-myList.forEach(function (k) {
-  // walk the list head to tail
-})
-myList.forEachReverse(function (k, index, list) {
-  // walk the list tail to head
-})
-var myDoubledList = myList.map(function (k) {
-  return k + k
-})
-// now myDoubledList contains ['barbar', 2, 4, 6, 'foofoo']
-// mapReverse is also a thing
-var myDoubledListReverse = myList.mapReverse(function (k) {
-  return k + k
-}) // ['foofoo', 6, 4, 2, 'barbar']
-
-var reduced = myList.reduce(function (set, entry) {
-  set += entry
-  return set
-}, 'start')
-console.log(reduced) // 'startfoo123bar'
+console.log(__('my awesome string %s', 'foo'));
 ```
 
-## api
+output:
 
-The whole API is considered "public".
+`my awesome string foo`
 
-Functions with the same name as an Array method work more or less the
-same way.
+_using tagged template literals_
 
-There's reverse versions of most things because that's the point.
+```js
+const __ = require('y18n')().__;
 
-### Yallist
+const str = 'foo';
 
-Default export, the class that holds and manages a list.
+console.log(__`my awesome string ${str}`);
+```
 
-Call it with either a forEach-able (like an array) or a set of
-arguments, to initialize the list.
+output:
 
-The Array-ish methods all act like you'd expect.  No magic length,
-though, so if you change that it won't automatically prune or add
-empty spots.
+`my awesome string foo`
 
-### Yallist.create(..)
+_pluralization support:_
 
-Alias for Yallist function.  Some people like factories.
+```js
+const __n = require('y18n')().__n;
 
-#### yallist.head
+console.log(__n('one fish %s', '%d fishes %s', 2, 'foo'));
+```
 
-The first node in the list
+output:
 
-#### yallist.tail
+`2 fishes foo`
 
-The last node in the list
+## Deno Example
 
-#### yallist.length
+As of `v5` `y18n` supports [Deno](https://github.com/denoland/deno):
 
-The number of nodes in the list.  (Change this at your peril.  It is
-not magic like Array length.)
+```typescript
+import y18n from "https://deno.land/x/y18n/deno.ts";
 
-#### yallist.toArray()
+const __ = y18n({
+  locale: 'pirate',
+  directory: './test/locales'
+}).__
 
-Convert the list to an array.
+console.info(__`Hi, ${'Ben'} ${'Coe'}!`)
+```
 
-#### yallist.forEach(fn, [thisp])
+You will need to run with `--allow-read` to load alternative locales.
 
-Call a function on each item in the list.
+## JSON Language Files
 
-#### yallist.forEachReverse(fn, [thisp])
+The JSON language files should be stored in a `./locales` folder.
+File names correspond to locales, e.g., `en.json`, `pirate.json`.
 
-Call a function on each item in the list, in reverse order.
+When strings are observed for the first time they will be
+added to the JSON file corresponding to the current locale.
 
-#### yallist.get(n)
+## Methods
 
-Get the data at position `n` in the list.  If you use this a lot,
-probably better off just using an Array.
+### require('y18n')(config)
 
-#### yallist.getReverse(n)
+Create an instance of y18n with the config provided, options include:
 
-Get the data at position `n`, counting from the tail.
+* `directory`: the locale directory, default `./locales`.
+* `updateFiles`: should newly observed strings be updated in file, default `true`.
+* `locale`: what locale should be used.
+* `fallbackToLanguage`: should fallback to a language-only file (e.g. `en.json`)
+  be allowed if a file matching the locale does not exist (e.g. `en_US.json`),
+  default `true`.
 
-#### yallist.map(fn, thisp)
+### y18n.\_\_(str, arg, arg, arg)
 
-Create a new Yallist with the result of calling the function on each
-item.
+Print a localized string, `%s` will be replaced with `arg`s.
 
-#### yallist.mapReverse(fn, thisp)
+This function can also be used as a tag for a template literal. You can use it
+like this: <code>__&#96;hello ${'world'}&#96;</code>. This will be equivalent to
+`__('hello %s', 'world')`.
 
-Same as `map`, but in reverse.
+### y18n.\_\_n(singularString, pluralString, count, arg, arg, arg)
 
-#### yallist.pop()
+Print a localized string with appropriate pluralization. If `%d` is provided
+in the string, the `count` will replace this placeholder.
 
-Get the data from the list tail, and remove the tail from the list.
+### y18n.setLocale(str)
 
-#### yallist.push(item, ...)
+Set the current locale being used.
 
-Insert one or more items to the tail of the list.
+### y18n.getLocale()
 
-#### yallist.reduce(fn, initialValue)
+What locale is currently being used?
 
-Like Array.reduce.
+### y18n.updateLocale(obj)
 
-#### yallist.reduceReverse
+Update the current locale with the key value pairs in `obj`.
 
-Like Array.reduce, but in reverse.
+## Supported Node.js Versions
 
-#### yallist.reverse
+Libraries in this ecosystem make a best effort to track
+[Node.js' release schedule](https://nodejs.org/en/about/releases/). Here's [a
+post on why we think this is important](https://medium.com/the-node-js-collection/maintainers-should-consider-following-node-js-release-schedule-ab08ed4de71a).
 
-Reverse the list in place.
+## License
 
-#### yallist.shift()
+ISC
 
-Get the data from the list head, and remove the head from the list.
-
-#### yallist.slice([from], [to])
-
-Just like Array.slice, but returns a new Yallist.
-
-#### yallist.sliceReverse([from], [to])
-
-Just like yallist.slice, but the result is returned in reverse.
-
-#### yallist.toArray()
-
-Create an array representation of the list.
-
-#### yallist.toArrayReverse()
-
-Create a reversed array representation of the list.
-
-#### yallist.unshift(item, ...)
-
-Insert one or more items to the head of the list.
-
-#### yallist.unshiftNode(node)
-
-Move a Node object to the front of the list.  (That is, pull it out of
-wherever it lives, and make it the new head.)
-
-If the node belongs to a different list, then that list will remove it
-first.
-
-#### yallist.pushNode(node)
-
-Move a Node object to the end of the list.  (That is, pull it out of
-wherever it lives, and make it the new tail.)
-
-If the node belongs to a list already, then that list will remove it
-first.
-
-#### yallist.removeNode(node)
-
-Remove a node from the list, preserving referential integrity of head
-and tail and other nodes.
-
-Will throw an error if you try to have a list remove a node that
-doesn't belong to it.
-
-### Yallist.Node
-
-The class that holds the data and is actually the list.
-
-Call with `var n = new Node(value, previousNode, nextNode)`
-
-Note that if you do direct operations on Nodes themselves, it's very
-easy to get into weird states where the list is broken.  Be careful :)
-
-#### node.next
-
-The next node in the list.
-
-#### node.prev
-
-The previous node in the list.
-
-#### node.value
-
-The data the node contains.
-
-#### node.list
-
-The list to which this node belongs.  (Null if it does not belong to
-any list.)
+[npm-url]: https://npmjs.org/package/y18n
+[npm-image]: https://img.shields.io/npm/v/y18n.svg
+[standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
+[standard-url]: https://github.com/feross/standard
