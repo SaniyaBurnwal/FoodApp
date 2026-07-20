@@ -1,127 +1,36 @@
-# y18n
+# Validate XML Names and Qualified Names
 
-[![NPM version][npm-image]][npm-url]
-[![js-standard-style][standard-image]][standard-url]
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+This package simply tells you whether or not a string matches the [`Name`](http://www.w3.org/TR/xml/#NT-Name) or [`QName`](http://www.w3.org/TR/xml-names/#NT-QName) productions in the XML Namespaces specification. We use it for implementing the [validate](https://dom.spec.whatwg.org/#validate) algorithm in jsdom, but you can use it for whatever you want.
 
-The bare-bones internationalization library used by yargs.
+## Usage
 
-Inspired by [i18n](https://www.npmjs.com/package/i18n).
-
-## Examples
-
-_simple string translation:_
+This package's main module's default export takes a string and will return an object of the form `{ success, error }`, where `success` is a boolean and if it is `false`, then `error` is a string containing some hint as to where the match went wrong.
 
 ```js
-const __ = require('y18n')().__;
+"use strict":
+var xnv = require("xml-name-validator");
+var assert = require("assert");
 
-console.log(__('my awesome string %s', 'foo'));
+// Will return { success: true, error: undefined }
+xnv.name("x");
+xnv.name(":");
+xnv.name("a:0");
+xnv.name("a:b:c");
+
+// Will return { success: false, error: <an explanatory string> }
+xnv.name("\\");
+xnv.name("'");
+xnv.name("0");
+xnv.name("a!");
+
+// Will return { success: true, error: undefined }
+xnv.qname("x");
+xnv.qname("a0");
+xnv.qname("a:b");
+
+// Will return { success: false, error: <an explanatory string> }
+xnv.qname(":a");
+xnv.qname(":b");
+xnv.qname("a:b:c");
+xnv.qname("a:0");
 ```
-
-output:
-
-`my awesome string foo`
-
-_using tagged template literals_
-
-```js
-const __ = require('y18n')().__;
-
-const str = 'foo';
-
-console.log(__`my awesome string ${str}`);
-```
-
-output:
-
-`my awesome string foo`
-
-_pluralization support:_
-
-```js
-const __n = require('y18n')().__n;
-
-console.log(__n('one fish %s', '%d fishes %s', 2, 'foo'));
-```
-
-output:
-
-`2 fishes foo`
-
-## Deno Example
-
-As of `v5` `y18n` supports [Deno](https://github.com/denoland/deno):
-
-```typescript
-import y18n from "https://deno.land/x/y18n/deno.ts";
-
-const __ = y18n({
-  locale: 'pirate',
-  directory: './test/locales'
-}).__
-
-console.info(__`Hi, ${'Ben'} ${'Coe'}!`)
-```
-
-You will need to run with `--allow-read` to load alternative locales.
-
-## JSON Language Files
-
-The JSON language files should be stored in a `./locales` folder.
-File names correspond to locales, e.g., `en.json`, `pirate.json`.
-
-When strings are observed for the first time they will be
-added to the JSON file corresponding to the current locale.
-
-## Methods
-
-### require('y18n')(config)
-
-Create an instance of y18n with the config provided, options include:
-
-* `directory`: the locale directory, default `./locales`.
-* `updateFiles`: should newly observed strings be updated in file, default `true`.
-* `locale`: what locale should be used.
-* `fallbackToLanguage`: should fallback to a language-only file (e.g. `en.json`)
-  be allowed if a file matching the locale does not exist (e.g. `en_US.json`),
-  default `true`.
-
-### y18n.\_\_(str, arg, arg, arg)
-
-Print a localized string, `%s` will be replaced with `arg`s.
-
-This function can also be used as a tag for a template literal. You can use it
-like this: <code>__&#96;hello ${'world'}&#96;</code>. This will be equivalent to
-`__('hello %s', 'world')`.
-
-### y18n.\_\_n(singularString, pluralString, count, arg, arg, arg)
-
-Print a localized string with appropriate pluralization. If `%d` is provided
-in the string, the `count` will replace this placeholder.
-
-### y18n.setLocale(str)
-
-Set the current locale being used.
-
-### y18n.getLocale()
-
-What locale is currently being used?
-
-### y18n.updateLocale(obj)
-
-Update the current locale with the key value pairs in `obj`.
-
-## Supported Node.js Versions
-
-Libraries in this ecosystem make a best effort to track
-[Node.js' release schedule](https://nodejs.org/en/about/releases/). Here's [a
-post on why we think this is important](https://medium.com/the-node-js-collection/maintainers-should-consider-following-node-js-release-schedule-ab08ed4de71a).
-
-## License
-
-ISC
-
-[npm-url]: https://npmjs.org/package/y18n
-[npm-image]: https://img.shields.io/npm/v/y18n.svg
-[standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
-[standard-url]: https://github.com/feross/standard
