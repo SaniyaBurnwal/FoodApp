@@ -1,51 +1,56 @@
 {
-  "name": "xmlchars",
-  "version": "2.2.0",
-  "description": "Utilities for determining if characters belong to character classes defined by the XML specs.",
+  "name": "ws",
+  "version": "7.5.10",
+  "description": "Simple to use, blazing fast and thoroughly tested websocket client and server for Node.js",
   "keywords": [
-    "XML",
-    "validation"
+    "HyBi",
+    "Push",
+    "RFC-6455",
+    "WebSocket",
+    "WebSockets",
+    "real-time"
   ],
-  "main": "xmlchars.js",
-  "types": "xmlchars.d.ts",
-  "repository": "https://github.com/lddubeau/xmlchars.git",
-  "author": "Louis-Dominique Dubeau <ldd@lddubeau.com>",
+  "homepage": "https://github.com/websockets/ws",
+  "bugs": "https://github.com/websockets/ws/issues",
+  "repository": "websockets/ws",
+  "author": "Einar Otto Stangvik <einaros@gmail.com> (http://2x.io)",
   "license": "MIT",
-  "devDependencies": {
-    "@commitlint/cli": "^8.1.0",
-    "@commitlint/config-angular": "^8.1.0",
-    "@types/chai": "^4.2.1",
-    "@types/mocha": "^5.2.7",
-    "chai": "^4.2.0",
-    "conventional-changelog-cli": "^2.0.23",
-    "husky": "^3.0.5",
-    "mocha": "^6.2.0",
-    "ts-node": "^8.3.0",
-    "tslint": "^5.19.0",
-    "tslint-config-lddubeau": "^4.1.0",
-    "typescript": "^3.6.2"
+  "main": "index.js",
+  "browser": "browser.js",
+  "engines": {
+    "node": ">=8.3.0"
   },
+  "files": [
+    "browser.js",
+    "index.js",
+    "lib/*.js"
+  ],
   "scripts": {
-    "copy": "cp README.md LICENSE build/dist && sed -e'/\"private\": true/d' package.json > build/dist/package.json",
-    "build": "tsc && npm run copy",
-    "pretest": "npm run build",
-    "test": "mocha",
-    "posttest": "tslint -p tsconfig.json && tslint -p test/tsconfig.json",
-    "prepack": "node -e 'require(\"assert\")(!require(\"./package.json\").private)'",
-    "test-install": "npm run test && (test_dir=build/install_dir; rm -rf $test_dir; mkdir -p $test_dir/node_modules; packname=`npm run xmlchars:pack --silent`; (cd $test_dir; npm install ../$packname); rm -rf $test_dir)",
-    "xmlchars:pack": "cd build/dist/ && (packname=`npm pack --silent`; mv $packname ..; echo $packname)",
-    "prepublishOnly": "node -e 'require(\"assert\")(!require(\"./package.json\").private)'",
-    "xmlchars:publish": "npm run test-install && (cd build/dist && npm publish)",
-    "preversion": "npm run test-install",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "postversion": "npm run xmlchars:publish",
-    "postpublish": "git push origin --follow-tags",
-    "clean": "rm -rf build"
+    "test": "nyc --reporter=lcov --reporter=text mocha --throw-deprecation test/*.test.js",
+    "integration": "mocha --throw-deprecation test/*.integration.js",
+    "lint": "eslint --ignore-path .gitignore . && prettier --check --ignore-path .gitignore \"**/*.{json,md,yaml,yml}\""
   },
-  "dependencies": {},
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS"
+  "peerDependencies": {
+    "bufferutil": "^4.0.1",
+    "utf-8-validate": "^5.0.2"
+  },
+  "peerDependenciesMeta": {
+    "bufferutil": {
+      "optional": true
+    },
+    "utf-8-validate": {
+      "optional": true
     }
+  },
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "bufferutil": "^4.0.1",
+    "eslint": "^7.2.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "mocha": "^7.0.0",
+    "nyc": "^15.0.0",
+    "prettier": "^2.0.5",
+    "utf-8-validate": "^5.0.2"
   }
 }
