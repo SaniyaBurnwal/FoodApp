@@ -1,56 +1,48 @@
 {
-  "name": "ws",
-  "version": "7.5.10",
-  "description": "Simple to use, blazing fast and thoroughly tested websocket client and server for Node.js",
-  "keywords": [
-    "HyBi",
-    "Push",
-    "RFC-6455",
-    "WebSocket",
-    "WebSockets",
-    "real-time"
-  ],
-  "homepage": "https://github.com/websockets/ws",
-  "bugs": "https://github.com/websockets/ws/issues",
-  "repository": "websockets/ws",
-  "author": "Einar Otto Stangvik <einaros@gmail.com> (http://2x.io)",
-  "license": "MIT",
+  "name": "write-file-atomic",
+  "version": "3.0.3",
+  "description": "Write files in an atomic fashion w/configurable ownership",
   "main": "index.js",
-  "browser": "browser.js",
-  "engines": {
-    "node": ">=8.3.0"
-  },
-  "files": [
-    "browser.js",
-    "index.js",
-    "lib/*.js"
-  ],
   "scripts": {
-    "test": "nyc --reporter=lcov --reporter=text mocha --throw-deprecation test/*.test.js",
-    "integration": "mocha --throw-deprecation test/*.integration.js",
-    "lint": "eslint --ignore-path .gitignore . && prettier --check --ignore-path .gitignore \"**/*.{json,md,yaml,yml}\""
+    "test": "tap",
+    "posttest": "npm run lint",
+    "lint": "standard",
+    "postlint": "rimraf chowncopy good nochmod nochown nofsync nofsyncopt noopen norename \"norename nounlink\" nowrite",
+    "preversion": "npm test",
+    "postversion": "npm publish",
+    "prepublishOnly": "git push origin --follow-tags"
   },
-  "peerDependencies": {
-    "bufferutil": "^4.0.1",
-    "utf-8-validate": "^5.0.2"
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/npm/write-file-atomic.git"
   },
-  "peerDependenciesMeta": {
-    "bufferutil": {
-      "optional": true
-    },
-    "utf-8-validate": {
-      "optional": true
-    }
+  "keywords": [
+    "writeFile",
+    "atomic"
+  ],
+  "author": "Rebecca Turner <me@re-becca.org> (http://re-becca.org)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/npm/write-file-atomic/issues"
+  },
+  "homepage": "https://github.com/npm/write-file-atomic",
+  "dependencies": {
+    "imurmurhash": "^0.1.4",
+    "is-typedarray": "^1.0.0",
+    "signal-exit": "^3.0.2",
+    "typedarray-to-buffer": "^3.1.5"
   },
   "devDependencies": {
-    "benchmark": "^2.1.4",
-    "bufferutil": "^4.0.1",
-    "eslint": "^7.2.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "mocha": "^7.0.0",
-    "nyc": "^15.0.0",
-    "prettier": "^2.0.5",
-    "utf-8-validate": "^5.0.2"
+    "mkdirp": "^0.5.1",
+    "require-inject": "^1.4.4",
+    "rimraf": "^2.6.3",
+    "standard": "^14.3.1",
+    "tap": "^14.10.6"
+  },
+  "files": [
+    "index.js"
+  ],
+  "tap": {
+    "100": true
   }
 }
