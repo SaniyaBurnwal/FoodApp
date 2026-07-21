@@ -1,15 +1,14 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "lib": ["es2017", "dom"],
-    "outDir": "./",
+    "esModuleInterop": true,
+    "module": "CommonJS",
+    "outDir": "./build",
+    "resolveJsonModule": true,
     "rootDir": "./src",
+    "target": "ES2018",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
-  "references": [
-    {
-      "path": "../workbox-core/"
-    }
-  ]
+  "references": [{"path": "../workbox-build/"}]
 }

@@ -1,8 +1,11 @@
-import { messageSW } from './messageSW.js';
-import { Workbox } from './Workbox.js';
-import './_version.js';
+import { GenerateSW, GenerateSWConfig } from './generate-sw';
+import { InjectManifest } from './inject-manifest';
 /**
- * @module workbox-window
+ * @module workbox-webpack-plugin
  */
-export { messageSW, Workbox };
-export * from './utils/WorkboxEvent.js';
+export { GenerateSW, GenerateSWConfig, InjectManifest };
+declare const _default: {
+    GenerateSW: typeof GenerateSW;
+    InjectManifest: typeof InjectManifest;
+};
+export default _default;
