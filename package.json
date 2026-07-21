@@ -1,48 +1,29 @@
 {
-  "name": "write-file-atomic",
-  "version": "3.0.3",
-  "description": "Write files in an atomic fashion w/configurable ownership",
-  "main": "index.js",
+  "name": "wrappy",
+  "version": "1.0.2",
+  "description": "Callback wrapping utility",
+  "main": "wrappy.js",
+  "files": [
+    "wrappy.js"
+  ],
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "tap": "^2.3.1"
+  },
   "scripts": {
-    "test": "tap",
-    "posttest": "npm run lint",
-    "lint": "standard",
-    "postlint": "rimraf chowncopy good nochmod nochown nofsync nofsyncopt noopen norename \"norename nounlink\" nowrite",
-    "preversion": "npm test",
-    "postversion": "npm publish",
-    "prepublishOnly": "git push origin --follow-tags"
+    "test": "tap --coverage test/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/npm/write-file-atomic.git"
+    "url": "https://github.com/npm/wrappy"
   },
-  "keywords": [
-    "writeFile",
-    "atomic"
-  ],
-  "author": "Rebecca Turner <me@re-becca.org> (http://re-becca.org)",
+  "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/npm/write-file-atomic/issues"
+    "url": "https://github.com/npm/wrappy/issues"
   },
-  "homepage": "https://github.com/npm/write-file-atomic",
-  "dependencies": {
-    "imurmurhash": "^0.1.4",
-    "is-typedarray": "^1.0.0",
-    "signal-exit": "^3.0.2",
-    "typedarray-to-buffer": "^3.1.5"
-  },
-  "devDependencies": {
-    "mkdirp": "^0.5.1",
-    "require-inject": "^1.4.4",
-    "rimraf": "^2.6.3",
-    "standard": "^14.3.1",
-    "tap": "^14.10.6"
-  },
-  "files": [
-    "index.js"
-  ],
-  "tap": {
-    "100": true
-  }
+  "homepage": "https://github.com/npm/wrappy"
 }
