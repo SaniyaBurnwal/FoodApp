@@ -1,259 +1,216 @@
-'use strict'
-module.exports = writeFile
-module.exports.sync = writeFileSync
-module.exports._getTmpname = getTmpname // for testing
-module.exports._cleanupOnExit = cleanupOnExit
+'use strict';
+const stringWidth = require('string-width');
+const stripAnsi = require('strip-ansi');
+const ansiStyles = require('ansi-styles');
 
-const fs = require('fs')
-const MurmurHash3 = require('imurmurhash')
-const onExit = require('signal-exit')
-const path = require('path')
-const isTypedArray = require('is-typedarray')
-const typedArrayToBuffer = require('typedarray-to-buffer')
-const { promisify } = require('util')
-const activeFiles = {}
+const ESCAPES = new Set([
+	'\u001B',
+	'\u009B'
+]);
 
-// if we run inside of a worker_thread, `process.pid` is not unique
-/* istanbul ignore next */
-const threadId = (function getId () {
-  try {
-    const workerThreads = require('worker_threads')
+const END_CODE = 39;
 
-    /// if we are in main thread, this is set to `0`
-    return workerThreads.threadId
-  } catch (e) {
-    // worker_threads are not available, fallback to 0
-    return 0
-  }
-})()
+const ANSI_ESCAPE_BELL = '\u0007';
+const ANSI_CSI = '[';
+const ANSI_OSC = ']';
+const ANSI_SGR_TERMINATOR = 'm';
+const ANSI_ESCAPE_LINK = `${ANSI_OSC}8;;`;
 
-let invocations = 0
-function getTmpname (filename) {
-  return filename + '.' +
-    MurmurHash3(__filename)
-      .hash(String(process.pid))
-      .hash(String(threadId))
-      .hash(String(++invocations))
-      .result()
-}
+const wrapAnsi = code => `${ESCAPES.values().next().value}${ANSI_CSI}${code}${ANSI_SGR_TERMINATOR}`;
+const wrapAnsiHyperlink = uri => `${ESCAPES.values().next().value}${ANSI_ESCAPE_LINK}${uri}${ANSI_ESCAPE_BELL}`;
 
-function cleanupOnExit (tmpfile) {
-  return () => {
-    try {
-      fs.unlinkSync(typeof tmpfile === 'function' ? tmpfile() : tmpfile)
-    } catch (_) {}
-  }
-}
+// Calculate the length of words split on ' ', ignoring
+// the extra characters added by ansi escape codes
+const wordLengths = string => string.split(' ').map(character => stringWidth(character));
 
-function serializeActiveFile (absoluteName) {
-  return new Promise(resolve => {
-    // make a queue if it doesn't already exist
-    if (!activeFiles[absoluteName]) activeFiles[absoluteName] = []
+// Wrap a long word across multiple rows
+// Ansi escape codes do not count towards length
+const wrapWord = (rows, word, columns) => {
+	const characters = [...word];
 
-    activeFiles[absoluteName].push(resolve) // add this job to the queue
-    if (activeFiles[absoluteName].length === 1) resolve() // kick off the first one
-  })
-}
+	let isInsideEscape = false;
+	let isInsideLinkEscape = false;
+	let visible = stringWidth(stripAnsi(rows[rows.length - 1]));
 
-// https://github.com/isaacs/node-graceful-fs/blob/master/polyfills.js#L315-L342
-function isChownErrOk (err) {
-  if (err.code === 'ENOSYS') {
-    return true
-  }
+	for (const [index, character] of characters.entries()) {
+		const characterLength = stringWidth(character);
 
-  const nonroot = !process.getuid || process.getuid() !== 0
-  if (nonroot) {
-    if (err.code === 'EINVAL' || err.code === 'EPERM') {
-      return true
-    }
-  }
+		if (visible + characterLength <= columns) {
+			rows[rows.length - 1] += character;
+		} else {
+			rows.push(character);
+			visible = 0;
+		}
 
-  return false
-}
+		if (ESCAPES.has(character)) {
+			isInsideEscape = true;
+			isInsideLinkEscape = characters.slice(index + 1).join('').startsWith(ANSI_ESCAPE_LINK);
+		}
 
-async function writeFileAsync (filename, data, options = {}) {
-  if (typeof options === 'string') {
-    options = { encoding: options }
-  }
+		if (isInsideEscape) {
+			if (isInsideLinkEscape) {
+				if (character === ANSI_ESCAPE_BELL) {
+					isInsideEscape = false;
+					isInsideLinkEscape = false;
+				}
+			} else if (character === ANSI_SGR_TERMINATOR) {
+				isInsideEscape = false;
+			}
 
-  let fd
-  let tmpfile
-  /* istanbul ignore next -- The closure only gets called when onExit triggers */
-  const removeOnExitHandler = onExit(cleanupOnExit(() => tmpfile))
-  const absoluteName = path.resolve(filename)
+			continue;
+		}
 
-  try {
-    await serializeActiveFile(absoluteName)
-    const truename = await promisify(fs.realpath)(filename).catch(() => filename)
-    tmpfile = getTmpname(truename)
+		visible += characterLength;
 
-    if (!options.mode || !options.chown) {
-      // Either mode or chown is not explicitly set
-      // Default behavior is to copy it from original file
-      const stats = await promisify(fs.stat)(truename).catch(() => {})
-      if (stats) {
-        if (options.mode == null) {
-          options.mode = stats.mode
-        }
+		if (visible === columns && index < characters.length - 1) {
+			rows.push('');
+			visible = 0;
+		}
+	}
 
-        if (options.chown == null && process.getuid) {
-          options.chown = { uid: stats.uid, gid: stats.gid }
-        }
-      }
-    }
+	// It's possible that the last row we copy over is only
+	// ansi escape characters, handle this edge-case
+	if (!visible && rows[rows.length - 1].length > 0 && rows.length > 1) {
+		rows[rows.length - 2] += rows.pop();
+	}
+};
 
-    fd = await promisify(fs.open)(tmpfile, 'w', options.mode)
-    if (options.tmpfileCreated) {
-      await options.tmpfileCreated(tmpfile)
-    }
-    if (isTypedArray(data)) {
-      data = typedArrayToBuffer(data)
-    }
-    if (Buffer.isBuffer(data)) {
-      await promisify(fs.write)(fd, data, 0, data.length, 0)
-    } else if (data != null) {
-      await promisify(fs.write)(fd, String(data), 0, String(options.encoding || 'utf8'))
-    }
+// Trims spaces from a string ignoring invisible sequences
+const stringVisibleTrimSpacesRight = string => {
+	const words = string.split(' ');
+	let last = words.length;
 
-    if (options.fsync !== false) {
-      await promisify(fs.fsync)(fd)
-    }
+	while (last > 0) {
+		if (stringWidth(words[last - 1]) > 0) {
+			break;
+		}
 
-    await promisify(fs.close)(fd)
-    fd = null
+		last--;
+	}
 
-    if (options.chown) {
-      await promisify(fs.chown)(tmpfile, options.chown.uid, options.chown.gid).catch(err => {
-        if (!isChownErrOk(err)) {
-          throw err
-        }
-      })
-    }
+	if (last === words.length) {
+		return string;
+	}
 
-    if (options.mode) {
-      await promisify(fs.chmod)(tmpfile, options.mode).catch(err => {
-        if (!isChownErrOk(err)) {
-          throw err
-        }
-      })
-    }
+	return words.slice(0, last).join(' ') + words.slice(last).join('');
+};
 
-    await promisify(fs.rename)(tmpfile, truename)
-  } finally {
-    if (fd) {
-      await promisify(fs.close)(fd).catch(
-        /* istanbul ignore next */
-        () => {}
-      )
-    }
-    removeOnExitHandler()
-    await promisify(fs.unlink)(tmpfile).catch(() => {})
-    activeFiles[absoluteName].shift() // remove the element added by serializeSameFile
-    if (activeFiles[absoluteName].length > 0) {
-      activeFiles[absoluteName][0]() // start next job if one is pending
-    } else delete activeFiles[absoluteName]
-  }
-}
+// The wrap-ansi module can be invoked in either 'hard' or 'soft' wrap mode
+//
+// 'hard' will never allow a string to take up more than columns characters
+//
+// 'soft' allows long words to expand past the column length
+const exec = (string, columns, options = {}) => {
+	if (options.trim !== false && string.trim() === '') {
+		return '';
+	}
 
-function writeFile (filename, data, options, callback) {
-  if (options instanceof Function) {
-    callback = options
-    options = {}
-  }
+	let returnValue = '';
+	let escapeCode;
+	let escapeUrl;
 
-  const promise = writeFileAsync(filename, data, options)
-  if (callback) {
-    promise.then(callback, callback)
-  }
+	const lengths = wordLengths(string);
+	let rows = [''];
 
-  return promise
-}
+	for (const [index, word] of string.split(' ').entries()) {
+		if (options.trim !== false) {
+			rows[rows.length - 1] = rows[rows.length - 1].trimStart();
+		}
 
-function writeFileSync (filename, data, options) {
-  if (typeof options === 'string') options = { encoding: options }
-  else if (!options) options = {}
-  try {
-    filename = fs.realpathSync(filename)
-  } catch (ex) {
-    // it's ok, it'll happen on a not yet existing file
-  }
-  const tmpfile = getTmpname(filename)
+		let rowLength = stringWidth(rows[rows.length - 1]);
 
-  if (!options.mode || !options.chown) {
-    // Either mode or chown is not explicitly set
-    // Default behavior is to copy it from original file
-    try {
-      const stats = fs.statSync(filename)
-      options = Object.assign({}, options)
-      if (!options.mode) {
-        options.mode = stats.mode
-      }
-      if (!options.chown && process.getuid) {
-        options.chown = { uid: stats.uid, gid: stats.gid }
-      }
-    } catch (ex) {
-      // ignore stat errors
-    }
-  }
+		if (index !== 0) {
+			if (rowLength >= columns && (options.wordWrap === false || options.trim === false)) {
+				// If we start with a new word but the current row length equals the length of the columns, add a new row
+				rows.push('');
+				rowLength = 0;
+			}
 
-  let fd
-  const cleanup = cleanupOnExit(tmpfile)
-  const removeOnExitHandler = onExit(cleanup)
+			if (rowLength > 0 || options.trim === false) {
+				rows[rows.length - 1] += ' ';
+				rowLength++;
+			}
+		}
 
-  let threw = true
-  try {
-    fd = fs.openSync(tmpfile, 'w', options.mode || 0o666)
-    if (options.tmpfileCreated) {
-      options.tmpfileCreated(tmpfile)
-    }
-    if (isTypedArray(data)) {
-      data = typedArrayToBuffer(data)
-    }
-    if (Buffer.isBuffer(data)) {
-      fs.writeSync(fd, data, 0, data.length, 0)
-    } else if (data != null) {
-      fs.writeSync(fd, String(data), 0, String(options.encoding || 'utf8'))
-    }
-    if (options.fsync !== false) {
-      fs.fsyncSync(fd)
-    }
+		// In 'hard' wrap mode, the length of a line is never allowed to extend past 'columns'
+		if (options.hard && lengths[index] > columns) {
+			const remainingColumns = (columns - rowLength);
+			const breaksStartingThisLine = 1 + Math.floor((lengths[index] - remainingColumns - 1) / columns);
+			const breaksStartingNextLine = Math.floor((lengths[index] - 1) / columns);
+			if (breaksStartingNextLine < breaksStartingThisLine) {
+				rows.push('');
+			}
 
-    fs.closeSync(fd)
-    fd = null
+			wrapWord(rows, word, columns);
+			continue;
+		}
 
-    if (options.chown) {
-      try {
-        fs.chownSync(tmpfile, options.chown.uid, options.chown.gid)
-      } catch (err) {
-        if (!isChownErrOk(err)) {
-          throw err
-        }
-      }
-    }
+		if (rowLength + lengths[index] > columns && rowLength > 0 && lengths[index] > 0) {
+			if (options.wordWrap === false && rowLength < columns) {
+				wrapWord(rows, word, columns);
+				continue;
+			}
 
-    if (options.mode) {
-      try {
-        fs.chmodSync(tmpfile, options.mode)
-      } catch (err) {
-        if (!isChownErrOk(err)) {
-          throw err
-        }
-      }
-    }
+			rows.push('');
+		}
 
-    fs.renameSync(tmpfile, filename)
-    threw = false
-  } finally {
-    if (fd) {
-      try {
-        fs.closeSync(fd)
-      } catch (ex) {
-        // ignore close errors at this stage, error may have closed fd already.
-      }
-    }
-    removeOnExitHandler()
-    if (threw) {
-      cleanup()
-    }
-  }
-}
+		if (rowLength + lengths[index] > columns && options.wordWrap === false) {
+			wrapWord(rows, word, columns);
+			continue;
+		}
+
+		rows[rows.length - 1] += word;
+	}
+
+	if (options.trim !== false) {
+		rows = rows.map(stringVisibleTrimSpacesRight);
+	}
+
+	const pre = [...rows.join('\n')];
+
+	for (const [index, character] of pre.entries()) {
+		returnValue += character;
+
+		if (ESCAPES.has(character)) {
+			const {groups} = new RegExp(`(?:\\${ANSI_CSI}(?<code>\\d+)m|\\${ANSI_ESCAPE_LINK}(?<uri>.*)${ANSI_ESCAPE_BELL})`).exec(pre.slice(index).join('')) || {groups: {}};
+			if (groups.code !== undefined) {
+				const code = Number.parseFloat(groups.code);
+				escapeCode = code === END_CODE ? undefined : code;
+			} else if (groups.uri !== undefined) {
+				escapeUrl = groups.uri.length === 0 ? undefined : groups.uri;
+			}
+		}
+
+		const code = ansiStyles.codes.get(Number(escapeCode));
+
+		if (pre[index + 1] === '\n') {
+			if (escapeUrl) {
+				returnValue += wrapAnsiHyperlink('');
+			}
+
+			if (escapeCode && code) {
+				returnValue += wrapAnsi(code);
+			}
+		} else if (character === '\n') {
+			if (escapeCode && code) {
+				returnValue += wrapAnsi(escapeCode);
+			}
+
+			if (escapeUrl) {
+				returnValue += wrapAnsiHyperlink(escapeUrl);
+			}
+		}
+	}
+
+	return returnValue;
+};
+
+// For each newline, invoke the method separately
+module.exports = (string, columns, options) => {
+	return String(string)
+		.normalize()
+		.replace(/\r\n/g, '\n')
+		.split('\n')
+		.map(line => exec(line, columns, options))
+		.join('\n');
+};
