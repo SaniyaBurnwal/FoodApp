@@ -6,14 +6,23 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {GenerateSW, GenerateSWConfig} from './generate-sw';
-import {InjectManifest} from './inject-manifest';
+import {concatenate} from './concatenate.js';
+import {concatenateToResponse} from './concatenateToResponse.js';
+import {isSupported} from './isSupported.js';
+import {strategy, StreamsHandlerCallback} from './strategy.js';
+
+import './_version.js';
 
 /**
- * @module workbox-webpack-plugin
+ * @module workbox-streams
  */
-export {GenerateSW, GenerateSWConfig, InjectManifest};
 
-// TODO: remove this in v7.
-// See https://github.com/GoogleChrome/workbox/issues/3033
-export default {GenerateSW, InjectManifest};
+export {
+  concatenate,
+  concatenateToResponse,
+  isSupported,
+  strategy,
+  StreamsHandlerCallback,
+};
+
+export * from './_types.js';
