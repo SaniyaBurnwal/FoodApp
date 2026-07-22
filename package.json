@@ -1,9 +1,9 @@
 {
-  "name": "workbox-strategies",
+  "name": "workbox-routing",
   "version": "6.6.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
-  "description": "A service worker helper library implementing common caching strategies.",
+  "description": "A service worker helper library to route request URLs to handlers.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
@@ -16,7 +16,7 @@
     "routing"
   ],
   "workbox": {
-    "browserNamespace": "workbox.strategies",
+    "browserNamespace": "workbox.routing",
     "packageType": "sw"
   },
   "main": "index.js",
