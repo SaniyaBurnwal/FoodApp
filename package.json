@@ -1,9 +1,9 @@
 {
-  "name": "workbox-streams",
+  "name": "workbox-strategies",
   "version": "6.6.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
-  "description": "A library that makes it easier to work with Streams in the browser.",
+  "description": "A service worker helper library implementing common caching strategies.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
@@ -12,19 +12,18 @@
     "workboxjs",
     "service worker",
     "sw",
-    "streams",
-    "readablestream"
+    "router",
+    "routing"
   ],
   "workbox": {
-    "browserNamespace": "workbox.streams",
+    "browserNamespace": "workbox.strategies",
     "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "6.6.0",
-    "workbox-routing": "6.6.0"
+    "workbox-core": "6.6.0"
   },
   "gitHead": "252644491d9bb5a67518935ede6df530107c9475"
 }

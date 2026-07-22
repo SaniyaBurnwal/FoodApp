@@ -5,13 +5,18 @@
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
-import { concatenate } from './concatenate.js';
-import { concatenateToResponse } from './concatenateToResponse.js';
-import { isSupported } from './isSupported.js';
-import { strategy } from './strategy.js';
+import { CacheFirst } from './CacheFirst.js';
+import { CacheOnly } from './CacheOnly.js';
+import { NetworkFirst } from './NetworkFirst.js';
+import { NetworkOnly } from './NetworkOnly.js';
+import { StaleWhileRevalidate } from './StaleWhileRevalidate.js';
+import { Strategy } from './Strategy.js';
+import { StrategyHandler } from './StrategyHandler.js';
 import './_version.js';
 /**
- * @module workbox-streams
+ * There are common caching strategies that most service workers will need
+ * and use. This module provides simple implementations of these strategies.
+ *
+ * @module workbox-strategies
  */
-export { concatenate, concatenateToResponse, isSupported, strategy, };
-export * from './_types.js';
+export { CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate, Strategy, StrategyHandler, };
