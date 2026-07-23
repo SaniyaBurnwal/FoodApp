@@ -1,5 +1,9 @@
-import '../_version.js';
-export declare const messages: {
-    strategyStart: (strategyName: string, request: Request) => string;
-    printFinalResponse: (response?: Response) => void;
-};
+import '../../_version.js';
+interface LoggableObject {
+    [key: string]: string | number;
+}
+interface MessageMap {
+    [messageID: string]: (param: LoggableObject) => string;
+}
+export declare const messages: MessageMap;
+export {};

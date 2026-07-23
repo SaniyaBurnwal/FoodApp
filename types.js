@@ -1,4 +1,8 @@
-export { A as Alias, C as Collection, M as Merge, N as Node, P as Pair, S as Scalar, d as YAMLMap, Y as YAMLSeq, b as binaryOptions, a as boolOptions, i as intOptions, n as nullOptions, s as strOptions } from './resolveSeq-67caf78a.js';
-export { S as Schema } from './Schema-9530c078.js';
-import './PlainValue-183afbad.js';
-import './warnings-5e4358fe.js';
+/*
+  Copyright 2019 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+import './_version.js';
