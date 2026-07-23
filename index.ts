@@ -6,16 +6,21 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {
-  CacheableResponse,
-  CacheableResponseOptions,
-} from './CacheableResponse.js';
-import {CacheableResponsePlugin} from './CacheableResponsePlugin.js';
-
-import './_version.js';
+import {copyWorkboxLibraries} from './lib/copy-workbox-libraries';
+import {getModuleURL} from './lib/cdn-utils';
+import {generateSW} from './generate-sw';
+import {getManifest} from './get-manifest';
+import {injectManifest} from './inject-manifest';
 
 /**
- * @module workbox-cacheable-response
+ * @module workbox-build
  */
+export {
+  copyWorkboxLibraries,
+  generateSW,
+  getManifest,
+  getModuleURL,
+  injectManifest,
+};
 
-export {CacheableResponse, CacheableResponseOptions, CacheableResponsePlugin};
+export * from './types';

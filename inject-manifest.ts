@@ -6,366 +6,158 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {escapeRegExp} from 'workbox-build/build/lib/escape-regexp';
-import {replaceAndUpdateSourceMap} from 'workbox-build/build/lib/replace-and-update-source-map';
-import {validateWebpackInjectManifestOptions} from 'workbox-build/build/lib/validate-options';
-import prettyBytes from 'pretty-bytes';
+import {RawSourceMap} from 'source-map';
+import assert from 'assert';
+import fse from 'fs-extra';
 import stringify from 'fast-json-stable-stringify';
 import upath from 'upath';
-import webpack from 'webpack';
 
-import {getManifestEntriesFromCompilation} from './lib/get-manifest-entries-from-compilation';
-import {getSourcemapAssetName} from './lib/get-sourcemap-asset-name';
-import {relativeToOutputPath} from './lib/relative-to-output-path';
-import {WebpackInjectManifestOptions} from 'workbox-build';
-// Used to keep track of swDest files written by *any* instance of this plugin.
-// See https://github.com/GoogleChrome/workbox/issues/2181
-const _generatedAssetNames = new Set<string>();
-
-// SingleEntryPlugin in v4 was renamed to EntryPlugin in v5.
-const SingleEntryPlugin = webpack.EntryPlugin || webpack.SingleEntryPlugin;
-
-// webpack v4/v5 compatibility:
-// https://github.com/webpack/webpack/issues/11425#issuecomment-686607633
-const {RawSource} = webpack.sources || require('webpack-sources');
+import {BuildResult, InjectManifestOptions} from './types';
+import {errors} from './lib/errors';
+import {escapeRegExp} from './lib/escape-regexp';
+import {getFileManifestEntries} from './lib/get-file-manifest-entries';
+import {getSourceMapURL} from './lib/get-source-map-url';
+import {rebasePath} from './lib/rebase-path';
+import {replaceAndUpdateSourceMap} from './lib/replace-and-update-source-map';
+import {translateURLToSourcemapPaths} from './lib/translate-url-to-sourcemap-paths';
+import {validateInjectManifestOptions} from './lib/validate-options';
 
 /**
- * This class supports compiling a service worker file provided via `swSrc`,
- * and injecting into that service worker a list of URLs and revision
- * information for precaching based on the webpack asset pipeline.
+ * This method creates a list of URLs to precache, referred to as a "precache
+ * manifest", based on the options you provide.
  *
- * Use an instance of `InjectManifest` in the
- * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
- * webpack config.
+ * The manifest is injected into the `swSrc` file, and the placeholder string
+ * `injectionPoint` determines where in the file the manifest should go.
  *
- * In addition to injecting the manifest, this plugin will perform a compilation
- * of the `swSrc` file, using the options from the main webpack configuration.
+ * The final service worker file, with the manifest injected, is written to
+ * disk at `swDest`.
+ *
+ * This method will not compile or bundle your `swSrc` file; it just handles
+ * injecting the manifest.
  *
  * ```
  * // The following lists some common options; see the rest of the documentation
  * // for the full set of options and defaults.
- * new InjectManifest({
- *   exclude: [/.../, '...'],
+ * const {count, size, warnings} = await injectManifest({
+ *   dontCacheBustURLsMatching: [new RegExp('...')],
+ *   globDirectory: '...',
+ *   globPatterns: ['...', '...'],
  *   maximumFileSizeToCacheInBytes: ...,
+ *   swDest: '...',
  *   swSrc: '...',
  * });
  * ```
  *
- * @memberof module:workbox-webpack-plugin
+ * @memberof workbox-build
  */
-class InjectManifest {
-  protected config: WebpackInjectManifestOptions;
-  private alreadyCalled: boolean;
+export async function injectManifest(
+  config: InjectManifestOptions,
+): Promise<BuildResult> {
+  const options = validateInjectManifestOptions(config);
 
-  /**
-   * Creates an instance of InjectManifest.
-   */
-  constructor(config: WebpackInjectManifestOptions) {
-    this.config = config;
-    this.alreadyCalled = false;
-  }
-
-  /**
-   * @param {Object} [compiler] default compiler object passed from webpack
-   *
-   * @private
-   */
-  propagateWebpackConfig(compiler: webpack.Compiler): void {
-    // Because this.config is listed last, properties that are already set
-    // there take precedence over derived properties from the compiler.
-    this.config = Object.assign(
-      {
-        mode: compiler.options.mode,
-        // Use swSrc with a hardcoded .js extension, in case swSrc is a .ts file.
-        swDest: upath.parse(this.config.swSrc).name + '.js',
-      },
-      this.config,
+  // Make sure we leave swSrc and swDest out of the precache manifest.
+  for (const file of [options.swSrc, options.swDest]) {
+    options.globIgnores!.push(
+      rebasePath({
+        file,
+        baseDirectory: options.globDirectory,
+      }),
     );
   }
 
-  /**
-   * @param {Object} [compiler] default compiler object passed from webpack
-   *
-   * @private
-   */
-  apply(compiler: webpack.Compiler): void {
-    this.propagateWebpackConfig(compiler);
+  const globalRegexp = new RegExp(escapeRegExp(options.injectionPoint!), 'g');
 
-    compiler.hooks.make.tapPromise(this.constructor.name, (compilation) =>
-      this.handleMake(compilation, compiler).catch(
-        (error: webpack.WebpackError) => {
-          compilation.errors.push(error);
-        },
-      ),
+  const {count, size, manifestEntries, warnings} = await getFileManifestEntries(
+    options,
+  );
+  let swFileContents: string;
+  try {
+    swFileContents = await fse.readFile(options.swSrc, 'utf8');
+  } catch (error) {
+    throw new Error(
+      `${errors['invalid-sw-src']} ${
+        error instanceof Error && error.message ? error.message : ''
+      }`,
     );
+  }
 
-    // webpack v4/v5 compatibility:
-    // https://github.com/webpack/webpack/issues/11425#issuecomment-690387207
-    if (webpack.version?.startsWith('4.')) {
-      compiler.hooks.emit.tapPromise(this.constructor.name, (compilation) =>
-        this.addAssets(compilation).catch((error: webpack.WebpackError) => {
-          compilation.errors.push(error);
-        }),
-      );
-    } else {
-      const {PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER} = webpack.Compilation;
-      // Specifically hook into thisCompilation, as per
-      // https://github.com/webpack/webpack/issues/11425#issuecomment-690547848
-      compiler.hooks.thisCompilation.tap(
-        this.constructor.name,
-        (compilation) => {
-          compilation.hooks.processAssets.tapPromise(
-            {
-              name: this.constructor.name,
-              // TODO(jeffposnick): This may need to change eventually.
-              // See https://github.com/webpack/webpack/issues/11822#issuecomment-726184972
-              stage: PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER - 10,
-            },
-            () =>
-              this.addAssets(compilation).catch(
-                (error: webpack.WebpackError) => {
-                  compilation.errors.push(error);
-                },
-              ),
-          );
-        },
-      );
+  const injectionResults = swFileContents.match(globalRegexp);
+  // See https://github.com/GoogleChrome/workbox/issues/2230
+  const injectionPoint = options.injectionPoint ? options.injectionPoint : '';
+  if (!injectionResults) {
+    if (upath.resolve(options.swSrc) === upath.resolve(options.swDest)) {
+      throw new Error(`${errors['same-src-and-dest']} ${injectionPoint}`);
     }
+    throw new Error(`${errors['injection-point-not-found']} ${injectionPoint}`);
   }
 
-  /**
-   * @param {Object} compilation The webpack compilation.
-   * @param {Object} parentCompiler The webpack parent compiler.
-   *
-   * @private
-   */
-  async performChildCompilation(
-    compilation: webpack.Compilation,
-    parentCompiler: webpack.Compiler,
-  ): Promise<void> {
-    const outputOptions = {
-      path: parentCompiler.options.output.path,
-      filename: this.config.swDest,
-    };
+  assert(
+    injectionResults.length === 1,
+    `${errors['multiple-injection-points']} ${injectionPoint}`,
+  );
 
-    const childCompiler = compilation.createChildCompiler(
-      this.constructor.name,
-      outputOptions,
-      [],
-    );
+  const manifestString = stringify(manifestEntries);
+  const filesToWrite: {[key: string]: string} = {};
 
-    childCompiler.context = parentCompiler.context;
-    childCompiler.inputFileSystem = parentCompiler.inputFileSystem;
-    childCompiler.outputFileSystem = parentCompiler.outputFileSystem;
+  const url = getSourceMapURL(swFileContents);
+  // See https://github.com/GoogleChrome/workbox/issues/2957
+  const {destPath, srcPath, warning} = translateURLToSourcemapPaths(
+    url,
+    options.swSrc,
+    options.swDest,
+  );
+  if (warning) {
+    warnings.push(warning);
+  }
 
-    if (Array.isArray(this.config.webpackCompilationPlugins)) {
-      for (const plugin of this.config.webpackCompilationPlugins) {
-        // plugin has a generic type, eslint complains for an unsafe
-        // assign and unsafe use
-        // eslint-disable-next-line
-        plugin.apply(childCompiler);
-      }
-    }
+  // If our swSrc file contains a sourcemap, we would invalidate that
+  // mapping if we just replaced injectionPoint with the stringified manifest.
+  // Instead, we need to update the swDest contents as well as the sourcemap
+  // (assuming it's a real file, not a data: URL) at the same time.
+  // See https://github.com/GoogleChrome/workbox/issues/2235
+  // and https://github.com/GoogleChrome/workbox/issues/2648
+  if (srcPath && destPath) {
+    const originalMap = (await fse.readJSON(srcPath, {
+      encoding: 'utf8',
+    })) as RawSourceMap;
 
-    new SingleEntryPlugin(
-      parentCompiler.context,
-      this.config.swSrc,
-      this.constructor.name,
-    ).apply(childCompiler);
-
-    await new Promise<void>((resolve, reject) => {
-      childCompiler.runAsChild((error, _entries, childCompilation) => {
-        if (error) {
-          reject(error);
-        } else {
-          compilation.warnings = compilation.warnings.concat(
-            childCompilation?.warnings ?? [],
-          );
-          compilation.errors = compilation.errors.concat(
-            childCompilation?.errors ?? [],
-          );
-
-          resolve();
-        }
-      });
+    const {map, source} = await replaceAndUpdateSourceMap({
+      originalMap,
+      jsFilename: upath.basename(options.swDest),
+      originalSource: swFileContents,
+      replaceString: manifestString,
+      searchString: options.injectionPoint!,
     });
-  }
 
-  /**
-   * @param {Object} compilation The webpack compilation.
-   * @param {Object} parentCompiler The webpack parent compiler.
-   *
-   * @private
-   */
-  addSrcToAssets(
-    compilation: webpack.Compilation,
-    parentCompiler: webpack.Compiler,
-  ): void {
-    // eslint-disable-next-line
-    const source = (parentCompiler.inputFileSystem as any).readFileSync(
-      this.config.swSrc,
+    filesToWrite[options.swDest] = source;
+    filesToWrite[destPath] = map;
+  } else {
+    // If there's no sourcemap associated with swSrc, a simple string
+    // replacement will suffice.
+    filesToWrite[options.swDest] = swFileContents.replace(
+      globalRegexp,
+      manifestString,
     );
-    compilation.emitAsset(this.config.swDest!, new RawSource(source));
   }
 
-  /**
-   * @param {Object} compilation The webpack compilation.
-   * @param {Object} parentCompiler The webpack parent compiler.
-   *
-   * @private
-   */
-  async handleMake(
-    compilation: webpack.Compilation,
-    parentCompiler: webpack.Compiler,
-  ): Promise<void> {
+  for (const [file, contents] of Object.entries(filesToWrite)) {
     try {
-      this.config = validateWebpackInjectManifestOptions(this.config);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(
-          `Please check your ${this.constructor.name} plugin ` +
-            `configuration:\n${error.message}`,
-        );
-      }
+      await fse.mkdirp(upath.dirname(file));
+    } catch (error: unknown) {
+      throw new Error(
+        errors['unable-to-make-sw-directory'] +
+          ` '${error instanceof Error && error.message ? error.message : ''}'`,
+      );
     }
 
-    this.config.swDest = relativeToOutputPath(compilation, this.config.swDest!);
-    _generatedAssetNames.add(this.config.swDest);
-
-    if (this.config.compileSrc) {
-      await this.performChildCompilation(compilation, parentCompiler);
-    } else {
-      this.addSrcToAssets(compilation, parentCompiler);
-      // This used to be a fatal error, but just warn at runtime because we
-      // can't validate it easily.
-      if (
-        Array.isArray(this.config.webpackCompilationPlugins) &&
-        this.config.webpackCompilationPlugins.length > 0
-      ) {
-        compilation.warnings.push(
-          new Error(
-            'compileSrc is false, so the ' +
-              'webpackCompilationPlugins option will be ignored.',
-          ) as webpack.WebpackError,
-        );
-      }
-    }
+    await fse.writeFile(file, contents);
   }
 
-  /**
-   * @param {Object} compilation The webpack compilation.
-   *
-   * @private
-   */
-  async addAssets(compilation: webpack.Compilation): Promise<void> {
-    // See https://github.com/GoogleChrome/workbox/issues/1790
-    if (this.alreadyCalled) {
-      const warningMessage =
-        `${this.constructor.name} has been called ` +
-        `multiple times, perhaps due to running webpack in --watch mode. The ` +
-        `precache manifest generated after the first call may be inaccurate! ` +
-        `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
-        `more information.`;
-
-      if (
-        !compilation.warnings.some(
-          (warning) =>
-            warning instanceof Error && warning.message === warningMessage,
-        )
-      ) {
-        compilation.warnings.push(
-          new Error(warningMessage) as webpack.WebpackError,
-        );
-      }
-    } else {
-      this.alreadyCalled = true;
-    }
-
-    const config = Object.assign({}, this.config);
-
-    // Ensure that we don't precache any of the assets generated by *any*
-    // instance of this plugin.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    config.exclude!.push(({asset}) => _generatedAssetNames.has(asset.name));
-
-    // See https://webpack.js.org/contribute/plugin-patterns/#monitoring-the-watch-graph
-    const absoluteSwSrc = upath.resolve(this.config.swSrc);
-    compilation.fileDependencies.add(absoluteSwSrc);
-
-    const swAsset = compilation.getAsset(config.swDest!);
-    const swAssetString = swAsset!.source.source().toString();
-
-    const globalRegexp = new RegExp(escapeRegExp(config.injectionPoint!), 'g');
-    const injectionResults = swAssetString.match(globalRegexp);
-
-    if (!injectionResults) {
-      throw new Error(
-        `Can't find ${config.injectionPoint ?? ''} in your SW source.`,
-      );
-    }
-    if (injectionResults.length !== 1) {
-      throw new Error(
-        `Multiple instances of ${config.injectionPoint ?? ''} were ` +
-          `found in your SW source. Include it only once. For more info, see ` +
-          `https://github.com/GoogleChrome/workbox/issues/2681`,
-      );
-    }
-
-    const {size, sortedEntries} = await getManifestEntriesFromCompilation(
-      compilation,
-      config,
-    );
-
-    let manifestString = stringify(sortedEntries);
-    if (
-      this.config.compileSrc &&
-      // See https://github.com/GoogleChrome/workbox/issues/2729
-      !(
-        compilation.options?.devtool === 'eval-cheap-source-map' &&
-        compilation.options.optimization?.minimize
-      )
-    ) {
-      // See https://github.com/GoogleChrome/workbox/issues/2263
-      manifestString = manifestString.replace(/"/g, `'`);
-    }
-
-    const sourcemapAssetName = getSourcemapAssetName(
-      compilation,
-      swAssetString,
-      config.swDest!,
-    );
-
-    if (sourcemapAssetName) {
-      _generatedAssetNames.add(sourcemapAssetName);
-      const sourcemapAsset = compilation.getAsset(sourcemapAssetName);
-      const {source, map} = await replaceAndUpdateSourceMap({
-        jsFilename: config.swDest!,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        originalMap: JSON.parse(sourcemapAsset!.source.source().toString()),
-        originalSource: swAssetString,
-        replaceString: manifestString,
-        searchString: config.injectionPoint!,
-      });
-
-      compilation.updateAsset(sourcemapAssetName, new RawSource(map));
-      compilation.updateAsset(config.swDest!, new RawSource(source));
-    } else {
-      // If there's no sourcemap associated with swDest, a simple string
-      // replacement will suffice.
-      compilation.updateAsset(
-        config.swDest!,
-        new RawSource(
-          swAssetString.replace(config.injectionPoint!, manifestString),
-        ),
-      );
-    }
-
-    if (compilation.getLogger) {
-      const logger = compilation.getLogger(this.constructor.name);
-      logger.info(`The service worker at ${config.swDest ?? ''} will precache
-        ${sortedEntries.length} URLs, totaling ${prettyBytes(size)}.`);
-    }
-  }
+  return {
+    count,
+    size,
+    warnings,
+    // Use upath.resolve() to make all the paths absolute.
+    filePaths: Object.keys(filesToWrite).map((f) => upath.resolve(f)),
+  };
 }
-
-export {InjectManifest};
