@@ -5,9 +5,10 @@
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
-import { initialize } from './initialize.js';
+import { CacheExpiration } from './CacheExpiration.js';
+import { ExpirationPlugin } from './ExpirationPlugin.js';
 import './_version.js';
 /**
- * @module workbox-google-analytics
+ * @module workbox-expiration
  */
-export { initialize };
+export { CacheExpiration, ExpirationPlugin };

@@ -1,6 +1,7 @@
-import { initialize, GoogleAnalyticsInitializeOptions } from './initialize.js';
+import { CacheExpiration } from './CacheExpiration.js';
+import { ExpirationPlugin, ExpirationPluginOptions } from './ExpirationPlugin.js';
 import './_version.js';
 /**
- * @module workbox-google-analytics
+ * @module workbox-expiration
  */
-export { initialize, GoogleAnalyticsInitializeOptions };
+export { CacheExpiration, ExpirationPlugin, ExpirationPluginOptions };

@@ -1,9 +1,9 @@
 {
-  "name": "workbox-google-analytics",
+  "name": "workbox-expiration",
   "version": "6.6.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
-  "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
+  "description": "A service worker helper library that expires cached responses based on age or maximum number of entries.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
@@ -12,23 +12,18 @@
     "workboxjs",
     "service worker",
     "sw",
-    "offline",
-    "google",
-    "analytics"
+    "workbox-plugin"
   ],
   "workbox": {
-    "browserNamespace": "workbox.googleAnalytics",
-    "outputFilename": "workbox-offline-ga",
+    "browserNamespace": "workbox.expiration",
     "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-background-sync": "6.6.0",
-    "workbox-core": "6.6.0",
-    "workbox-routing": "6.6.0",
-    "workbox-strategies": "6.6.0"
+    "idb": "^7.0.1",
+    "workbox-core": "6.6.0"
   },
   "gitHead": "252644491d9bb5a67518935ede6df530107c9475"
 }
