@@ -1,74 +1,30 @@
-import webpack from 'webpack';
-import { WebpackInjectManifestOptions } from 'workbox-build';
+import { BuildResult, InjectManifestOptions } from './types';
 /**
- * This class supports compiling a service worker file provided via `swSrc`,
- * and injecting into that service worker a list of URLs and revision
- * information for precaching based on the webpack asset pipeline.
+ * This method creates a list of URLs to precache, referred to as a "precache
+ * manifest", based on the options you provide.
  *
- * Use an instance of `InjectManifest` in the
- * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
- * webpack config.
+ * The manifest is injected into the `swSrc` file, and the placeholder string
+ * `injectionPoint` determines where in the file the manifest should go.
  *
- * In addition to injecting the manifest, this plugin will perform a compilation
- * of the `swSrc` file, using the options from the main webpack configuration.
+ * The final service worker file, with the manifest injected, is written to
+ * disk at `swDest`.
+ *
+ * This method will not compile or bundle your `swSrc` file; it just handles
+ * injecting the manifest.
  *
  * ```
  * // The following lists some common options; see the rest of the documentation
  * // for the full set of options and defaults.
- * new InjectManifest({
- *   exclude: [/.../, '...'],
+ * const {count, size, warnings} = await injectManifest({
+ *   dontCacheBustURLsMatching: [new RegExp('...')],
+ *   globDirectory: '...',
+ *   globPatterns: ['...', '...'],
  *   maximumFileSizeToCacheInBytes: ...,
+ *   swDest: '...',
  *   swSrc: '...',
  * });
  * ```
  *
- * @memberof module:workbox-webpack-plugin
+ * @memberof workbox-build
  */
-declare class InjectManifest {
-    protected config: WebpackInjectManifestOptions;
-    private alreadyCalled;
-    /**
-     * Creates an instance of InjectManifest.
-     */
-    constructor(config: WebpackInjectManifestOptions);
-    /**
-     * @param {Object} [compiler] default compiler object passed from webpack
-     *
-     * @private
-     */
-    propagateWebpackConfig(compiler: webpack.Compiler): void;
-    /**
-     * @param {Object} [compiler] default compiler object passed from webpack
-     *
-     * @private
-     */
-    apply(compiler: webpack.Compiler): void;
-    /**
-     * @param {Object} compilation The webpack compilation.
-     * @param {Object} parentCompiler The webpack parent compiler.
-     *
-     * @private
-     */
-    performChildCompilation(compilation: webpack.Compilation, parentCompiler: webpack.Compiler): Promise<void>;
-    /**
-     * @param {Object} compilation The webpack compilation.
-     * @param {Object} parentCompiler The webpack parent compiler.
-     *
-     * @private
-     */
-    addSrcToAssets(compilation: webpack.Compilation, parentCompiler: webpack.Compiler): void;
-    /**
-     * @param {Object} compilation The webpack compilation.
-     * @param {Object} parentCompiler The webpack parent compiler.
-     *
-     * @private
-     */
-    handleMake(compilation: webpack.Compilation, parentCompiler: webpack.Compiler): Promise<void>;
-    /**
-     * @param {Object} compilation The webpack compilation.
-     *
-     * @private
-     */
-    addAssets(compilation: webpack.Compilation): Promise<void>;
-}
-export { InjectManifest };
+export declare function injectManifest(config: InjectManifestOptions): Promise<BuildResult>;

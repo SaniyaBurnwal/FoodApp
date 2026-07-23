@@ -1,21 +1,21 @@
-import webpack from 'webpack';
-import { ManifestEntry, WebpackGenerateSWOptions } from 'workbox-build';
-export interface GenerateSWConfig extends WebpackGenerateSWOptions {
-    manifestEntries?: Array<ManifestEntry>;
-}
+import { BuildResult, GenerateSWOptions } from './types';
 /**
- * This class supports creating a new, ready-to-use service worker file as
- * part of the webpack compilation process.
+ * This method creates a list of URLs to precache, referred to as a "precache
+ * manifest", based on the options you provide.
  *
- * Use an instance of `GenerateSW` in the
- * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
- * webpack config.
+ * It also takes in additional options that configures the service worker's
+ * behavior, like any `runtimeCaching` rules it should use.
+ *
+ * Based on the precache manifest and the additional configuration, it writes
+ * a ready-to-use service worker file to disk at `swDest`.
  *
  * ```
  * // The following lists some common options; see the rest of the documentation
  * // for the full set of options and defaults.
- * new GenerateSW({
- *   exclude: [/.../, '...'],
+ * const {count, size, warnings} = await generateSW({
+ *   dontCacheBustURLsMatching: [new RegExp('...')],
+ *   globDirectory: '...',
+ *   globPatterns: ['...', '...'],
  *   maximumFileSizeToCacheInBytes: ...,
  *   navigateFallback: '...',
  *   runtimeCaching: [{
@@ -38,35 +38,10 @@ export interface GenerateSWConfig extends WebpackGenerateSWOptions {
  *     },
  *   }],
  *   skipWaiting: ...,
+ *   swDest: '...',
  * });
  * ```
  *
- * @memberof module:workbox-webpack-plugin
+ * @memberof workbox-build
  */
-declare class GenerateSW {
-    protected config: GenerateSWConfig;
-    private alreadyCalled;
-    /**
-     * Creates an instance of GenerateSW.
-     */
-    constructor(config?: GenerateSWConfig);
-    /**
-     * @param {Object} [compiler] default compiler object passed from webpack
-     *
-     * @private
-     */
-    propagateWebpackConfig(compiler: webpack.Compiler): void;
-    /**
-     * @param {Object} [compiler] default compiler object passed from webpack
-     *
-     * @private
-     */
-    apply(compiler: webpack.Compiler): void;
-    /**
-     * @param {Object} compilation The webpack compilation.
-     *
-     * @private
-     */
-    addAssets(compilation: webpack.Compilation): Promise<void>;
-}
-export { GenerateSW };
+export declare function generateSW(config: GenerateSWOptions): Promise<BuildResult>;

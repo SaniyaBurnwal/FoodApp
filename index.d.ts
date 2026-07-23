@@ -1,40 +1,10 @@
-declare function traverse(
-  schema: traverse.SchemaObject,
-  opts: traverse.Options,
-  cb?: traverse.Callback
-): void;
-
-declare function traverse(
-  schema: traverse.SchemaObject,
-  cb: traverse.Callback
-): void;
-
-declare namespace traverse {
-  interface SchemaObject {
-    $id?: string;
-    $schema?: string;
-    [x: string]: any;
-  }
-
-  type Callback = (
-    schema: SchemaObject,
-    jsonPtr: string,
-    rootSchema: SchemaObject,
-    parentJsonPtr?: string,
-    parentKeyword?: string,
-    parentSchema?: SchemaObject,
-    keyIndex?: string | number
-  ) => void;
-
-  interface Options {
-    allKeys?: boolean;
-    cb?:
-      | Callback
-      | {
-          pre?: Callback;
-          post?: Callback;
-        };
-  }
-}
-
-export = traverse;
+import { copyWorkboxLibraries } from './lib/copy-workbox-libraries';
+import { getModuleURL } from './lib/cdn-utils';
+import { generateSW } from './generate-sw';
+import { getManifest } from './get-manifest';
+import { injectManifest } from './inject-manifest';
+/**
+ * @module workbox-build
+ */
+export { copyWorkboxLibraries, generateSW, getManifest, getModuleURL, injectManifest, };
+export * from './types';
