@@ -5,20 +5,14 @@
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
-import { canConstructReadableStream } from 'workbox-core/_private/canConstructReadableStream.js';
 import './_version.js';
 /**
- * This is a utility method that determines whether the current browser supports
- * the features required to create streamed responses. Currently, it checks if
- * [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream)
- * can be created.
+ * @return {boolean} Whether or not the current browser supports enabling
+ * navigation preload.
  *
- * @return {boolean} `true`, if the current browser meets the requirements for
- * streaming responses, and `false` otherwise.
- *
- * @memberof workbox-streams
+ * @memberof workbox-navigation-preload
  */
 function isSupported() {
-    return canConstructReadableStream();
+    return Boolean(self.registration && self.registration.navigationPreload);
 }
 export { isSupported };
