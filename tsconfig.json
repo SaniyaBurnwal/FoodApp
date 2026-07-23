@@ -6,5 +6,9 @@
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
-  "references": [{"path": "../workbox-core/"}]
+  "references": [
+    {"path": "../workbox-core/"},
+    {"path": "../workbox-routing/"},
+    {"path": "../workbox-strategies/"}
+  ]
 }

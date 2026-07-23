@@ -8,6 +8,30 @@
 
 import './_version.js';
 
+export interface InstallResult {
+  updatedURLs: string[];
+  notUpdatedURLs: string[];
+}
+
+export interface CleanupResult {
+  deletedCacheRequests: string[];
+}
+
+export declare interface PrecacheEntry {
+  integrity?: string;
+  url: string;
+  revision?: string | null;
+}
+
+export interface PrecacheRouteOptions {
+  directoryIndex?: string;
+  ignoreURLParametersMatching?: RegExp[];
+  cleanURLs?: boolean;
+  urlManipulation?: urlManipulation;
+}
+
+export type urlManipulation = ({url}: {url: URL}) => URL[];
+
 // * * * IMPORTANT! * * *
 // ------------------------------------------------------------------------- //
 // jdsoc type definitions cannot be declared above TypeScript definitions or
@@ -16,51 +40,46 @@ import './_version.js';
 // have to put declare them below.
 
 /**
- * The "match" callback is used to determine if a `Route` should apply for a
- * particular URL. When matching occurs in response to a fetch event from the
- * client, the `event` object is supplied in addition to the `url`, `request`,
- * and `sameOrigin` value. However, since the match callback can be invoked
- * outside of a fetch event, matching logic should not assume the `event`
- * object will always be available.
+ * @typedef {Object} InstallResult
+ * @property {Array<string>} updatedURLs List of URLs that were updated during
+ * installation.
+ * @property {Array<string>} notUpdatedURLs List of URLs that were already up to
+ * date.
  *
- * If the match callback returns a truthy value, the matching route's
- * {@link workbox-routing~handlerCallback} will be
- * invoked immediately. If the value returned is a non-empty array or object,
- * that value will be set on the handler's `context.params` argument.
- *
- * @callback ~matchCallback
- * @param {Object} context
- * @param {Request} context.request The corresponding request.
- * @param {URL} context.url The request's URL.
- * @param {ExtendableEvent} context.event The corresponding event that triggered
- *     the request.
- * @param {boolean} context.sameOrigin The result of comparing `url.origin`
- *     against the current origin.
- * @return {*} To signify a match, return a truthy value.
- *
- * @memberof workbox-routing
+ * @memberof workbox-precaching
  */
 
 /**
- * The "handler" callback is invoked whenever a `Router` matches a URL to a
- * `Route` via its {@link workbox-routing~matchCallback}
- * callback. This callback should return a Promise that resolves with a
- * `Response`.
+ * @typedef {Object} CleanupResult
+ * @property {Array<string>} deletedCacheRequests List of URLs that were deleted
+ * while cleaning up the cache.
  *
- * If a non-empty array or object is returned by the
- * {@link workbox-routing~matchCallback} it
- * will be passed in as the handler's `context.params` argument.
+ * @memberof workbox-precaching
+ */
+
+/**
+ * @typedef {Object} PrecacheEntry
+ * @property {string} url URL to precache.
+ * @property {string} [revision] Revision information for the URL.
+ * @property {string} [integrity] Integrity metadata that will be used when
+ * making the network request for the URL.
  *
- * @callback ~handlerCallback
+ * @memberof workbox-precaching
+ */
+
+/**
+ * The "urlManipulation" callback can be used to determine if there are any
+ * additional permutations of a URL that should be used to check against
+ * the available precached files.
+ *
+ * For example, Workbox supports checking for '/index.html' when the URL
+ * '/' is provided. This callback allows additional, custom checks.
+ *
+ * @callback ~urlManipulation
  * @param {Object} context
- * @param {Request|string} context.request The corresponding request.
- * @param {URL} context.url The URL that matched, if available.
- * @param {ExtendableEvent} context.event The corresponding event that triggered
- *     the request.
- * @param {Object} [context.params] Array or Object parameters returned by the
- *     Route's {@link workbox-routing~matchCallback}.
- *     This will be undefined if an empty array or object were returned.
- * @return {Promise<Response>} The response that will fulfill the request.
+ * @param {URL} context.url The request's URL.
+ * @return {Array<URL>} To add additional urls to test, return an Array of
+ * URLs. Please note that these **should not be strings**, but URL objects.
  *
- * @memberof workbox-routing
+ * @memberof workbox-precaching
  */
