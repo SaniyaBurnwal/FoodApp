@@ -5,11 +5,9 @@
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
-import { disable } from './disable.js';
-import { enable } from './enable.js';
-import { isSupported } from './isSupported.js';
+import { initialize } from './initialize.js';
 import './_version.js';
 /**
- * @module workbox-navigation-preload
+ * @module workbox-google-analytics
  */
-export { disable, enable, isSupported };
+export { initialize };
