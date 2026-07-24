@@ -1,25 +1,13 @@
-import { BackgroundSyncPlugin } from './BackgroundSyncPlugin.js';
-import { Queue, QueueOptions } from './Queue.js';
-import { QueueStore } from './QueueStore.js';
-import { StorableRequest } from './StorableRequest.js';
-import './_version.js';
-interface SyncManager {
-    getTags(): Promise<string[]>;
-    register(tag: string): Promise<void>;
-}
-declare global {
-    interface ServiceWorkerRegistration {
-        readonly sync: SyncManager;
-    }
-    interface SyncEvent extends ExtendableEvent {
-        readonly lastChance: boolean;
-        readonly tag: string;
-    }
-    interface ServiceWorkerGlobalScopeEventMap {
-        sync: SyncEvent;
-    }
-}
 /**
- * @module workbox-background-sync
+ * Determines the type of the given collection, or returns false.
+ *
+ * @param {unknown} value The potential collection
+ * @returns {'Map' | 'Set' | 'WeakMap' | 'WeakSet' | false} 'Map' | 'Set' | 'WeakMap' | 'WeakSet' | false
  */
-export { BackgroundSyncPlugin, Queue, QueueOptions, QueueStore, StorableRequest };
+declare function whichCollection<K, V>(value: Map<K, V>): 'Map';
+declare function whichCollection<T>(value: Set<T>): 'Set';
+declare function whichCollection<K extends WeakKey, V>(value: WeakMap<K, V>): 'WeakMap';
+declare function whichCollection<T extends WeakKey>(value: WeakSet<T>): 'WeakSet';
+declare function whichCollection(value: null | undefined | boolean | number | bigint | symbol | unknown): false;
+
+export = whichCollection;

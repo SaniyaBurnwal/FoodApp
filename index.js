@@ -1,16 +1,25 @@
-/*
-  Copyright 2018 Google LLC
+'use strict';
 
-  Use of this source code is governed by an MIT-style
-  license that can be found in the LICENSE file or at
-  https://opensource.org/licenses/MIT.
-*/
-import { BackgroundSyncPlugin } from './BackgroundSyncPlugin.js';
-import { Queue } from './Queue.js';
-import { QueueStore } from './QueueStore.js';
-import { StorableRequest } from './StorableRequest.js';
-import './_version.js';
-/**
- * @module workbox-background-sync
- */
-export { BackgroundSyncPlugin, Queue, QueueStore, StorableRequest };
+var isMap = require('is-map');
+var isSet = require('is-set');
+var isWeakMap = require('is-weakmap');
+var isWeakSet = require('is-weakset');
+
+/** @type {import('.')} */
+module.exports = function whichCollection(/** @type {unknown} */ value) {
+	if (value && typeof value === 'object') {
+		if (isMap(value)) {
+			return 'Map';
+		}
+		if (isSet(value)) {
+			return 'Set';
+		}
+		if (isWeakMap(value)) {
+			return 'WeakMap';
+		}
+		if (isWeakSet(value)) {
+			return 'WeakSet';
+		}
+	}
+	return false;
+};
