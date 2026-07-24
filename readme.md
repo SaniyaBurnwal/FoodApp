@@ -1,91 +1,52 @@
-# wrap-ansi [![Build Status](https://travis-ci.com/chalk/wrap-ansi.svg?branch=master)](https://travis-ci.com/chalk/wrap-ansi) [![Coverage Status](https://coveralls.io/repos/github/chalk/wrap-ansi/badge.svg?branch=master)](https://coveralls.io/github/chalk/wrap-ansi?branch=master)
+walker [![Build Status](https://secure.travis-ci.org/daaku/nodejs-walker.png)](http://travis-ci.org/daaku/nodejs-walker)
+======
 
-> Wordwrap a string with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors_and_Styles)
+A nodejs directory walker. Broadcasts events for various file types as well as
+a generic "entry" event for all types and provides the ability to prune
+directory trees. This shows the entire API; everything is optional:
 
-## Install
-
+```javascript
+Walker('/etc/')
+  .filterDir(function(dir, stat) {
+    if (dir === '/etc/pam.d') {
+      console.warn('Skipping /etc/pam.d and children')
+      return false
+    }
+    return true
+  })
+  .on('entry', function(entry, stat) {
+    console.log('Got entry: ' + entry)
+  })
+  .on('dir', function(dir, stat) {
+    console.log('Got directory: ' + dir)
+  })
+  .on('file', function(file, stat) {
+    console.log('Got file: ' + file)
+  })
+  .on('symlink', function(symlink, stat) {
+    console.log('Got symlink: ' + symlink)
+  })
+  .on('blockDevice', function(blockDevice, stat) {
+    console.log('Got blockDevice: ' + blockDevice)
+  })
+  .on('fifo', function(fifo, stat) {
+    console.log('Got fifo: ' + fifo)
+  })
+  .on('socket', function(socket, stat) {
+    console.log('Got socket: ' + socket)
+  })
+  .on('characterDevice', function(characterDevice, stat) {
+    console.log('Got characterDevice: ' + characterDevice)
+  })
+  .on('error', function(er, entry, stat) {
+    console.log('Got error ' + er + ' on entry ' + entry)
+  })
+  .on('end', function() {
+    console.log('All files traversed.')
+  })
 ```
-$ npm install wrap-ansi
-```
 
-## Usage
-
-```js
-const chalk = require('chalk');
-const wrapAnsi = require('wrap-ansi');
-
-const input = 'The quick brown ' + chalk.red('fox jumped over ') +
-	'the lazy ' + chalk.green('dog and then ran away with the unicorn.');
-
-console.log(wrapAnsi(input, 20));
-```
-
-<img width="331" src="screenshot.png">
-
-## API
-
-### wrapAnsi(string, columns, options?)
-
-Wrap words to the specified column width.
-
-#### string
-
-Type: `string`
-
-String with ANSI escape codes. Like one styled by [`chalk`](https://github.com/chalk/chalk). Newline characters will be normalized to `\n`.
-
-#### columns
-
-Type: `number`
-
-Number of columns to wrap the text to.
-
-#### options
-
-Type: `object`
-
-##### hard
-
-Type: `boolean`\
-Default: `false`
-
-By default the wrap is soft, meaning long words may extend past the column width. Setting this to `true` will make it hard wrap at the column width.
-
-##### wordWrap
-
-Type: `boolean`\
-Default: `true`
-
-By default, an attempt is made to split words at spaces, ensuring that they don't extend past the configured columns. If wordWrap is `false`, each column will instead be completely filled splitting words as necessary.
-
-##### trim
-
-Type: `boolean`\
-Default: `true`
-
-Whitespace on all lines is removed by default. Set this option to `false` if you don't want to trim.
-
-## Related
-
-- [slice-ansi](https://github.com/chalk/slice-ansi) - Slice a string with ANSI escape codes
-- [cli-truncate](https://github.com/sindresorhus/cli-truncate) - Truncate a string to a specific width in the terminal
-- [chalk](https://github.com/chalk/chalk) - Terminal string styling done right
-- [jsesc](https://github.com/mathiasbynens/jsesc) - Generate ASCII-only output from Unicode strings. Useful for creating test fixtures.
-
-## Maintainers
-
-- [Sindre Sorhus](https://github.com/sindresorhus)
-- [Josh Junon](https://github.com/qix-)
-- [Benjamin Coe](https://github.com/bcoe)
-
----
-
-<div align="center">
-	<b>
-		<a href="https://tidelift.com/subscription/pkg/npm-wrap_ansi?utm_source=npm-wrap-ansi&utm_medium=referral&utm_campaign=readme">Get professional support for this package with a Tidelift subscription</a>
-	</b>
-	<br>
-	<sub>
-		Tidelift helps make open source sustainable for maintainers while giving companies<br>assurances about security, maintenance, and licensing for their dependencies.
-	</sub>
-</div>
+You specify a root directory to walk and optionally specify a function to prune
+sub-directory trees via the `filterDir` function. The Walker exposes a number
+of events, broadcasting various file type events a generic error event and
+finally the event to signal the end of the process.

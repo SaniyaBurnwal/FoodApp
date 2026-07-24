@@ -1,11 +1,25 @@
-type primitive = string | number | bigint | boolean | symbol | null | undefined;
+/// <reference types="node" />
 
-declare function whichBoxedPrimitive(value: primitive): null;
-declare function whichBoxedPrimitive(value: BigInt): 'BigInt';
-declare function whichBoxedPrimitive(value: Boolean): 'Boolean';
-declare function whichBoxedPrimitive(value: Number): 'Number';
-declare function whichBoxedPrimitive(value: String): 'String';
-declare function whichBoxedPrimitive(value: Symbol): 'Symbol';
-declare function whichBoxedPrimitive(value: unknown): undefined;
+import { Profiler } from 'inspector'
+import { CoverageMapData } from 'istanbul-lib-coverage'
+import { RawSourceMap } from 'source-map'
 
-export = whichBoxedPrimitive;
+declare type Sources =
+  | {
+      source: string
+    }
+  | {
+      source: string
+      originalSource: string
+      sourceMap: { sourcemap: RawSourceMap }
+    }
+declare class V8ToIstanbul {
+  load(): Promise<void>
+  destroy(): void
+  applyCoverage(blocks: ReadonlyArray<Profiler.FunctionCoverage>): void
+  toIstanbul(): CoverageMapData
+}
+
+declare function v8ToIstanbul(scriptPath: string, wrapperLength?: number, sources?: Sources, excludePath?: (path: string) => boolean): V8ToIstanbul
+
+export = v8ToIstanbul
