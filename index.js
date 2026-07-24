@@ -1,25 +1,24 @@
-'use strict';
+"use strict";
 
-var isMap = require('is-map');
-var isSet = require('is-set');
-var isWeakMap = require('is-weakmap');
-var isWeakSet = require('is-weakset');
+const { URL, URLSearchParams } = require("./webidl2js-wrapper");
+const urlStateMachine = require("./dist/url-state-machine");
+const percentEncoding = require("./dist/percent-encoding");
 
-/** @type {import('.')} */
-module.exports = function whichCollection(/** @type {unknown} */ value) {
-	if (value && typeof value === 'object') {
-		if (isMap(value)) {
-			return 'Map';
-		}
-		if (isSet(value)) {
-			return 'Set';
-		}
-		if (isWeakMap(value)) {
-			return 'WeakMap';
-		}
-		if (isWeakSet(value)) {
-			return 'WeakSet';
-		}
-	}
-	return false;
-};
+const sharedGlobalObject = {};
+URL.install(sharedGlobalObject, ["Window"]);
+URLSearchParams.install(sharedGlobalObject, ["Window"]);
+
+exports.URL = sharedGlobalObject.URL;
+exports.URLSearchParams = sharedGlobalObject.URLSearchParams;
+
+exports.parseURL = urlStateMachine.parseURL;
+exports.basicURLParse = urlStateMachine.basicURLParse;
+exports.serializeURL = urlStateMachine.serializeURL;
+exports.serializeHost = urlStateMachine.serializeHost;
+exports.serializeInteger = urlStateMachine.serializeInteger;
+exports.serializeURLOrigin = urlStateMachine.serializeURLOrigin;
+exports.setTheUsername = urlStateMachine.setTheUsername;
+exports.setThePassword = urlStateMachine.setThePassword;
+exports.cannotHaveAUsernamePasswordPort = urlStateMachine.cannotHaveAUsernamePasswordPort;
+
+exports.percentDecode = percentEncoding.percentDecodeBytes;

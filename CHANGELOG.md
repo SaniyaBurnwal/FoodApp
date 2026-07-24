@@ -1,63 +1,142 @@
-# Changelog
+### 0.7.4 / 2020-05-22
 
-All notable changes to this project will be documented in this file.
+- Avoid crashing if `process.version` does not contain any digits
+- Emit `ping` and `pong` events from the `Server` driver
+- Require http-parser-js >=0.5.1 which fixes the bug we addressed in 0.7.3
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### 0.7.3 / 2019-06-13
 
-## [v1.0.2](https://github.com/inspect-js/which-collection/compare/v1.0.1...v1.0.2) - 2024-03-08
+- Cap version of http-parser-js below 0.4.11, which introduced a bug that
+  prevents us from handling messages that are part of the same input buffer as
+  the handshake response if chunked encoding is specified
 
-### Commits
+### 0.7.2 / 2019-06-13
 
-- [actions] reuse common workflows [`a5b2949`](https://github.com/inspect-js/which-collection/commit/a5b294901933131cf753c260c0dccf15c1aeeadc)
-- [Tests] migrate tests to Github Actions [`283ec03`](https://github.com/inspect-js/which-collection/commit/283ec03d70ad8fdc94b3d77c1b11de011617a04d)
-- add types [`bf576db`](https://github.com/inspect-js/which-collection/commit/bf576db80dbc9bca1332622f0b6c4772706dca45)
-- [actions] use `node/install` instead of `node/run`; use `codecov` action [`24968a2`](https://github.com/inspect-js/which-collection/commit/24968a2aa55109520e2ec0532343224e11a6e311)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `object-inspect`, `safe-publish-latest`, `tape` [`f60b277`](https://github.com/inspect-js/which-collection/commit/f60b27727206261a0359adb5588cba645eb56cf8)
-- [Tests] run `nyc` on all tests [`5700269`](https://github.com/inspect-js/which-collection/commit/57002694f9b5f40078bd2777ecc934ece544a556)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `auto-changelog`, `object-inspect`, `tape` [`eb1f1a4`](https://github.com/inspect-js/which-collection/commit/eb1f1a468f53bcbed6ddf7459f0811a0f5ea37a7)
-- [actions] remove redundant finisher [`cd5b8fc`](https://github.com/inspect-js/which-collection/commit/cd5b8fcddb9d8ea9ea5132b88c50357e2409a277)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `auto-changelog`, `object-inspect`, `tape` [`f5786fa`](https://github.com/inspect-js/which-collection/commit/f5786fa3189c884debfa4f160a1733a738acccec)
-- [actions] update rebase action to use reusable workflow [`7ac7b67`](https://github.com/inspect-js/which-collection/commit/7ac7b6777797230ca105f9c1560e7b5fc3ba901f)
-- [actions] update codecov uploader [`b074105`](https://github.com/inspect-js/which-collection/commit/b074105e5001df42a8889cd8cadaabd2a2fc276c)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `auto-changelog`, `object-inspect`, `tape` [`ec640d6`](https://github.com/inspect-js/which-collection/commit/ec640d667a48428aec41e19769ae9490da8301e1)
-- [actions] add "Allow Edits" workflow [`65d842e`](https://github.com/inspect-js/which-collection/commit/65d842ee9c09ed60370cf14a721b94f9a5de43cd)
-- [readme] remove travis badge [`f106289`](https://github.com/inspect-js/which-collection/commit/f10628946ad70286f503497850f6dd2350311577)
-- [Dev Deps] update `@ljharb/eslint-config`, `aud`, `npmignore`, `object-inspect`, `tape` [`e784a1f`](https://github.com/inspect-js/which-collection/commit/e784a1fe96f8bc3eb21350ec7a35c3cf24c66a35)
-- [meta] use `npmignore` to autogenerate an npmignore file [`95b503f`](https://github.com/inspect-js/which-collection/commit/95b503fd95f30deca71415da97937a3620e24912)
-- [readme] add actions and codecov badges [`121ba2d`](https://github.com/inspect-js/which-collection/commit/121ba2d320ecefd51e4af06cacae2f71dd51b59d)
-- [Deps] update `is-map`, `is-set`, `is-weakmap`, `is-weakset` [`4aa150f`](https://github.com/inspect-js/which-collection/commit/4aa150fdad7b8c0728972d6b074cb43464681e97)
-- [meta] simplify "exports" [`2afaed7`](https://github.com/inspect-js/which-collection/commit/2afaed7f8918aa87a380c333944db274670838ae)
-- [Deps] update `is-map`, `is-set` [`ce44763`](https://github.com/inspect-js/which-collection/commit/ce447638a94303f0571b4c3d12389c20a61d7817)
-- [actions] switch Automatic Rease workflow to `pull_request_target` event [`b16b664`](https://github.com/inspect-js/which-collection/commit/b16b6641301c3c9ef7df8000be13a69b8087474f)
-- [Dev Deps] update `auto-changelog`, `tape` [`2b9c953`](https://github.com/inspect-js/which-collection/commit/2b9c953b469d7fd0e86d96b89f20ef0c424e4ba1)
-- [meta] add missing `engines.node` [`dcdbfde`](https://github.com/inspect-js/which-collection/commit/dcdbfdecc9f77daf99735d1f5377d9f3894fead3)
-- [Dev Deps] update `auto-changelog`; add `aud` [`8e7f28d`](https://github.com/inspect-js/which-collection/commit/8e7f28d82f6240b2eaf763c32a3ede53be6cdfe1)
-- [meta] add `sideEffects` flag [`3e0376b`](https://github.com/inspect-js/which-collection/commit/3e0376b80d7a18b78fdc898a9a166e9ffc83eee3)
-- [Deps] update `is-weakset` [`7b3e922`](https://github.com/inspect-js/which-collection/commit/7b3e922ca0f9f356c1cbf4701857d71b378eb7d7)
-- [Tests] only audit prod deps [`3339fea`](https://github.com/inspect-js/which-collection/commit/3339fea827a7fdcf8db868bb52278a3186593d48)
+(This version was pulled due to an error when publishing)
 
-## [v1.0.1](https://github.com/inspect-js/which-collection/compare/v1.0.0...v1.0.1) - 2020-01-26
+### 0.7.1 / 2019-06-10
 
-### Commits
+- Catch any exceptions produced while generating a handshake response and send a
+  `400 Bad Request` response to the client
+- Pick the RFC-6455 protocol version if the request contains any of the headers
+  used by that version
+- Use the `Buffer.alloc()` and `Buffer.from()` functions instead of the unsafe
+  `Buffer()` constructor
+- Handle errors encountered while handling malformed draft-76 requests
+- Change license from MIT to Apache 2.0
 
-- [actions] add automatic rebasing / merge commit blocking [`c3820b2`](https://github.com/inspect-js/which-collection/commit/c3820b2e8c88548f2c7da4080b1d1b6b41be97a4)
-- [patch] add "exports" [`10983b5`](https://github.com/inspect-js/which-collection/commit/10983b5fdcc453c64216c3d6aa3fb93340091818)
-- [Deps] update `is-map`, `is-set`, `is-weakmap`, `is-weakset` [`1565925`](https://github.com/inspect-js/which-collection/commit/1565925705c4abfe88065b211d1d960791f7cd3c)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `tape` [`92ef871`](https://github.com/inspect-js/which-collection/commit/92ef871338395352f1bafc3156088361a3fd917a)
-- [Dev Deps] update `@ljharb/eslint-config` [`61e9cde`](https://github.com/inspect-js/which-collection/commit/61e9cde1830ccc2b551dd6a1a873ae2cf27a74c7)
+### 0.7.0 / 2017-09-11
 
-## v1.0.0 - 2019-11-13
+- Add `ping` and `pong` to the set of events users can listen to
+- Replace the bindings to Node's HTTP parser with `http-parser-js`
 
-### Commits
+### 0.6.5 / 2016-05-20
 
-- Initial commit [`a21fddf`](https://github.com/inspect-js/which-collection/commit/a21fddffef3b2f21923e4d056295dd63661d8155)
-- Tests [`ec86bc1`](https://github.com/inspect-js/which-collection/commit/ec86bc12f0516bd662c6e2966b36de2e1128a431)
-- readme [`ffe969c`](https://github.com/inspect-js/which-collection/commit/ffe969cf4388d18e12c664cc51498bbdef08e565)
-- implementation [`9acb669`](https://github.com/inspect-js/which-collection/commit/9acb6695e6a5e60f4c0b6de59eaf8b1f681d78e5)
-- npm init [`124a63e`](https://github.com/inspect-js/which-collection/commit/124a63ee68a0015b47cbcc08b0d5598e553e7c9a)
-- [meta] add `auto-changelog`, `safe-publish-latest` [`df0d6d4`](https://github.com/inspect-js/which-collection/commit/df0d6d4f1efbc4d9b327471b9c659bd487b25b49)
-- [meta] add `funding` field; create FUNDING.yml [`032c81c`](https://github.com/inspect-js/which-collection/commit/032c81c826d68acd6242fa87fd6348db70135506)
-- [Tests] add `npm run lint` [`6ae406d`](https://github.com/inspect-js/which-collection/commit/6ae406d9e459779abbdd90f48559552f740b05c9)
-- fixup [`a2cad36`](https://github.com/inspect-js/which-collection/commit/a2cad363f12e30afe7619597187c5d4dc840a2a7)
-- Only apps should have lockfiles [`30b3aae`](https://github.com/inspect-js/which-collection/commit/30b3aae37155f0786e4582501369f738b3282cd7)
+- Don't mutate buffers passed in by the application when masking
+
+### 0.6.4 / 2016-01-07
+
+- If a number is given as input for a frame payload, send it as a string
+
+### 0.6.3 / 2015-11-06
+
+- Reject draft-76 handshakes if their Sec-WebSocket-Key headers are invalid
+- Throw a more helpful error if a client is created with an invalid URL
+
+### 0.6.2 / 2015-07-18
+
+- When the peer sends a close frame with no error code, emit 1000
+
+### 0.6.1 / 2015-07-13
+
+- Use the `buffer.{read,write}UInt{16,32}BE` methods for reading/writing numbers
+  to buffers rather than including duplicate logic for this
+
+### 0.6.0 / 2015-07-08
+
+- Allow the parser to recover cleanly if event listeners raise an error
+- Add a `pong` method for sending unsolicited pong frames
+
+### 0.5.4 / 2015-03-29
+
+- Don't emit extra close frames if we receive a close frame after we already
+  sent one
+- Fail the connection when the driver receives an invalid
+  `Sec-WebSocket-Extensions` header
+
+### 0.5.3 / 2015-02-22
+
+- Don't treat incoming data as WebSocket frames if a client driver is closed
+  before receiving the server handshake
+
+### 0.5.2 / 2015-02-19
+
+- Fix compatibility with the HTTP parser on io.js
+- Use `websocket-extensions` to make sure messages and close frames are kept in
+  order
+- Don't emit multiple `error` events
+
+### 0.5.1 / 2014-12-18
+
+- Don't allow drivers to be created with unrecognized options
+
+### 0.5.0 / 2014-12-13
+
+- Support protocol extensions via the websocket-extensions module
+
+### 0.4.0 / 2014-11-08
+
+- Support connection via HTTP proxies using `CONNECT`
+
+### 0.3.6 / 2014-10-04
+
+- It is now possible to call `close()` before `start()` and close the driver
+
+### 0.3.5 / 2014-07-06
+
+- Don't hold references to frame buffers after a message has been emitted
+- Make sure that `protocol` and `version` are exposed properly by the TCP driver
+
+### 0.3.4 / 2014-05-08
+
+- Don't hold memory-leaking references to I/O buffers after they have been
+  parsed
+
+### 0.3.3 / 2014-04-24
+
+- Correct the draft-76 status line reason phrase
+
+### 0.3.2 / 2013-12-29
+
+- Expand `maxLength` to cover sequences of continuation frames and
+  `draft-{75,76}`
+- Decrease default maximum frame buffer size to 64MB
+- Stop parsing when the protocol enters a failure mode, to save CPU cycles
+
+### 0.3.1 / 2013-12-03
+
+- Add a `maxLength` option to limit allowed frame size
+- Don't pre-allocate a message buffer until the whole frame has arrived
+- Fix compatibility with Node v0.11 `HTTPParser`
+
+### 0.3.0 / 2013-09-09
+
+- Support client URLs with Basic Auth credentials
+
+### 0.2.2 / 2013-07-05
+
+- No functional changes, just updates to package.json
+
+### 0.2.1 / 2013-05-17
+
+- Export the isSecureRequest() method since faye-websocket relies on it
+- Queue sent messages in the client's initial state
+
+### 0.2.0 / 2013-05-12
+
+- Add API for setting and reading headers
+- Add Driver.server() method for getting a driver for TCP servers
+
+### 0.1.0 / 2013-05-04
+
+- First stable release
