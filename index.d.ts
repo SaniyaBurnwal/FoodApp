@@ -1,25 +1,16 @@
-/// <reference types="node" />
+/**
+Generate a unique random string.
 
-import { Profiler } from 'inspector'
-import { CoverageMapData } from 'istanbul-lib-coverage'
-import { RawSourceMap } from 'source-map'
+@returns A 32 character unique string. Matches the length of MD5, which is [unique enough](https://stackoverflow.com/a/2444336/64949) for non-crypto purposes.
 
-declare type Sources =
-  | {
-      source: string
-    }
-  | {
-      source: string
-      originalSource: string
-      sourceMap: { sourcemap: RawSourceMap }
-    }
-declare class V8ToIstanbul {
-  load(): Promise<void>
-  destroy(): void
-  applyCoverage(blocks: ReadonlyArray<Profiler.FunctionCoverage>): void
-  toIstanbul(): CoverageMapData
-}
+@example
+```
+import uniqueString = require('unique-string');
 
-declare function v8ToIstanbul(scriptPath: string, wrapperLength?: number, sources?: Sources, excludePath?: (path: string) => boolean): V8ToIstanbul
+uniqueString();
+//=> 'b4de2a49c8ffa3fbee04446f045483b2'
+```
+*/
+declare function uniqueString(): string;
 
-export = v8ToIstanbul
+export = uniqueString;

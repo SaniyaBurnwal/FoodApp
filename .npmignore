@@ -1,10 +1,2 @@
-*.bat
-.htaccess
-
-src
-
-npm-debug.log
-!*.gitkeep
-
 node_modules
-xeno
+test
