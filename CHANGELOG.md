@@ -1,229 +1,58 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
-### [8.3.2](https://github.com/uuidjs/uuid/compare/v8.3.1...v8.3.2) (2020-12-08)
-
-### Bug Fixes
-
-- lazy load getRandomValues ([#537](https://github.com/uuidjs/uuid/issues/537)) ([16c8f6d](https://github.com/uuidjs/uuid/commit/16c8f6df2f6b09b4d6235602d6a591188320a82e)), closes [#536](https://github.com/uuidjs/uuid/issues/536)
-
-### [8.3.1](https://github.com/uuidjs/uuid/compare/v8.3.0...v8.3.1) (2020-10-04)
-
-### Bug Fixes
-
-- support expo>=39.0.0 ([#515](https://github.com/uuidjs/uuid/issues/515)) ([c65a0f3](https://github.com/uuidjs/uuid/commit/c65a0f3fa73b901959d638d1e3591dfacdbed867)), closes [#375](https://github.com/uuidjs/uuid/issues/375)
-
-## [8.3.0](https://github.com/uuidjs/uuid/compare/v8.2.0...v8.3.0) (2020-07-27)
-
-### Features
-
-- add parse/stringify/validate/version/NIL APIs ([#479](https://github.com/uuidjs/uuid/issues/479)) ([0e6c10b](https://github.com/uuidjs/uuid/commit/0e6c10ba1bf9517796ff23c052fc0468eedfd5f4)), closes [#475](https://github.com/uuidjs/uuid/issues/475) [#478](https://github.com/uuidjs/uuid/issues/478) [#480](https://github.com/uuidjs/uuid/issues/480) [#481](https://github.com/uuidjs/uuid/issues/481) [#180](https://github.com/uuidjs/uuid/issues/180)
-
-## [8.2.0](https://github.com/uuidjs/uuid/compare/v8.1.0...v8.2.0) (2020-06-23)
-
-### Features
-
-- improve performance of v1 string representation ([#453](https://github.com/uuidjs/uuid/issues/453)) ([0ee0b67](https://github.com/uuidjs/uuid/commit/0ee0b67c37846529c66089880414d29f3ae132d5))
-- remove deprecated v4 string parameter ([#454](https://github.com/uuidjs/uuid/issues/454)) ([88ce3ca](https://github.com/uuidjs/uuid/commit/88ce3ca0ba046f60856de62c7ce03f7ba98ba46c)), closes [#437](https://github.com/uuidjs/uuid/issues/437)
-- support jspm ([#473](https://github.com/uuidjs/uuid/issues/473)) ([e9f2587](https://github.com/uuidjs/uuid/commit/e9f2587a92575cac31bc1d4ae944e17c09756659))
-
-### Bug Fixes
-
-- prepare package exports for webpack 5 ([#468](https://github.com/uuidjs/uuid/issues/468)) ([8d6e6a5](https://github.com/uuidjs/uuid/commit/8d6e6a5f8965ca9575eb4d92e99a43435f4a58a8))
-
-## [8.1.0](https://github.com/uuidjs/uuid/compare/v8.0.0...v8.1.0) (2020-05-20)
-
-### Features
-
-- improve v4 performance by reusing random number array ([#435](https://github.com/uuidjs/uuid/issues/435)) ([bf4af0d](https://github.com/uuidjs/uuid/commit/bf4af0d711b4d2ed03d1f74fd12ad0baa87dc79d))
-- optimize V8 performance of bytesToUuid ([#434](https://github.com/uuidjs/uuid/issues/434)) ([e156415](https://github.com/uuidjs/uuid/commit/e156415448ec1af2351fa0b6660cfb22581971f2))
-
-### Bug Fixes
-
-- export package.json required by react-native and bundlers ([#449](https://github.com/uuidjs/uuid/issues/449)) ([be1c8fe](https://github.com/uuidjs/uuid/commit/be1c8fe9a3206c358e0059b52fafd7213aa48a52)), closes [ai/nanoevents#44](https://github.com/ai/nanoevents/issues/44#issuecomment-602010343) [#444](https://github.com/uuidjs/uuid/issues/444)
-
-## [8.0.0](https://github.com/uuidjs/uuid/compare/v7.0.3...v8.0.0) (2020-04-29)
-
-### ⚠ BREAKING CHANGES
-
-- For native ECMAScript Module (ESM) usage in Node.js only named exports are exposed, there is no more default export.
-
-  ```diff
-  -import uuid from 'uuid';
-  -console.log(uuid.v4()); // -> 'cd6c3b08-0adc-4f4b-a6ef-36087a1c9869'
-  +import { v4 as uuidv4 } from 'uuid';
-  +uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
-  ```
-
-- Deep requiring specific algorithms of this library like `require('uuid/v4')`, which has been deprecated in `uuid@7`, is no longer supported.
-
-  Instead use the named exports that this module exports.
-
-  For ECMAScript Modules (ESM):
-
-  ```diff
-  -import uuidv4 from 'uuid/v4';
-  +import { v4 as uuidv4 } from 'uuid';
-  uuidv4();
-  ```
-
-  For CommonJS:
-
-  ```diff
-  -const uuidv4 = require('uuid/v4');
-  +const { v4: uuidv4 } = require('uuid');
-  uuidv4();
-  ```
-
-### Features
-
-- native Node.js ES Modules (wrapper approach) ([#423](https://github.com/uuidjs/uuid/issues/423)) ([2d9f590](https://github.com/uuidjs/uuid/commit/2d9f590ad9701d692625c07ed62f0a0f91227991)), closes [#245](https://github.com/uuidjs/uuid/issues/245) [#419](https://github.com/uuidjs/uuid/issues/419) [#342](https://github.com/uuidjs/uuid/issues/342)
-- remove deep requires ([#426](https://github.com/uuidjs/uuid/issues/426)) ([daf72b8](https://github.com/uuidjs/uuid/commit/daf72b84ceb20272a81bb5fbddb05dd95922cbba))
-
-### Bug Fixes
-
-- add CommonJS syntax example to README quickstart section ([#417](https://github.com/uuidjs/uuid/issues/417)) ([e0ec840](https://github.com/uuidjs/uuid/commit/e0ec8402c7ad44b7ef0453036c612f5db513fda0))
-
-### [7.0.3](https://github.com/uuidjs/uuid/compare/v7.0.2...v7.0.3) (2020-03-31)
-
-### Bug Fixes
-
-- make deep require deprecation warning work in browsers ([#409](https://github.com/uuidjs/uuid/issues/409)) ([4b71107](https://github.com/uuidjs/uuid/commit/4b71107d8c0d2ef56861ede6403fc9dc35a1e6bf)), closes [#408](https://github.com/uuidjs/uuid/issues/408)
-
-### [7.0.2](https://github.com/uuidjs/uuid/compare/v7.0.1...v7.0.2) (2020-03-04)
-
-### Bug Fixes
-
-- make access to msCrypto consistent ([#393](https://github.com/uuidjs/uuid/issues/393)) ([8bf2a20](https://github.com/uuidjs/uuid/commit/8bf2a20f3565df743da7215eebdbada9d2df118c))
-- simplify link in deprecation warning ([#391](https://github.com/uuidjs/uuid/issues/391)) ([bb2c8e4](https://github.com/uuidjs/uuid/commit/bb2c8e4e9f4c5f9c1eaaf3ea59710c633cd90cb7))
-- update links to match content in readme ([#386](https://github.com/uuidjs/uuid/issues/386)) ([44f2f86](https://github.com/uuidjs/uuid/commit/44f2f86e9d2bbf14ee5f0f00f72a3db1292666d4))
-
-### [7.0.1](https://github.com/uuidjs/uuid/compare/v7.0.0...v7.0.1) (2020-02-25)
-
-### Bug Fixes
-
-- clean up esm builds for node and browser ([#383](https://github.com/uuidjs/uuid/issues/383)) ([59e6a49](https://github.com/uuidjs/uuid/commit/59e6a49e7ce7b3e8fb0f3ee52b9daae72af467dc))
-- provide browser versions independent from module system ([#380](https://github.com/uuidjs/uuid/issues/380)) ([4344a22](https://github.com/uuidjs/uuid/commit/4344a22e7aed33be8627eeaaf05360f256a21753)), closes [#378](https://github.com/uuidjs/uuid/issues/378)
-
-## [7.0.0](https://github.com/uuidjs/uuid/compare/v3.4.0...v7.0.0) (2020-02-24)
-
-### ⚠ BREAKING CHANGES
-
-- The default export, which used to be the v4() method but which was already discouraged in v3.x of this library, has been removed.
-- Explicitly note that deep imports of the different uuid version functions are deprecated and no longer encouraged and that ECMAScript module named imports should be used instead. Emit a deprecation warning for people who deep-require the different algorithm variants.
-- Remove builtin support for insecure random number generators in the browser. Users who want that will have to supply their own random number generator function.
-- Remove support for generating v3 and v5 UUIDs in Node.js<4.x
-- Convert code base to ECMAScript Modules (ESM) and release CommonJS build for node and ESM build for browser bundlers.
-
-### Features
-
-- add UMD build to npm package ([#357](https://github.com/uuidjs/uuid/issues/357)) ([4e75adf](https://github.com/uuidjs/uuid/commit/4e75adf435196f28e3fbbe0185d654b5ded7ca2c)), closes [#345](https://github.com/uuidjs/uuid/issues/345)
-- add various es module and CommonJS examples ([b238510](https://github.com/uuidjs/uuid/commit/b238510bf352463521f74bab175a3af9b7a42555))
-- ensure that docs are up-to-date in CI ([ee5e77d](https://github.com/uuidjs/uuid/commit/ee5e77db547474f5a8f23d6c857a6d399209986b))
-- hybrid CommonJS & ECMAScript modules build ([a3f078f](https://github.com/uuidjs/uuid/commit/a3f078faa0baff69ab41aed08e041f8f9c8993d0))
-- remove insecure fallback random number generator ([3a5842b](https://github.com/uuidjs/uuid/commit/3a5842b141a6e5de0ae338f391661e6b84b167c9)), closes [#173](https://github.com/uuidjs/uuid/issues/173)
-- remove support for pre Node.js v4 Buffer API ([#356](https://github.com/uuidjs/uuid/issues/356)) ([b59b5c5](https://github.com/uuidjs/uuid/commit/b59b5c5ecad271c5453f1a156f011671f6d35627))
-- rename repository to github:uuidjs/uuid ([#351](https://github.com/uuidjs/uuid/issues/351)) ([c37a518](https://github.com/uuidjs/uuid/commit/c37a518e367ac4b6d0aa62dba1bc6ce9e85020f7)), closes [#338](https://github.com/uuidjs/uuid/issues/338)
-
-### Bug Fixes
-
-- add deep-require proxies for local testing and adjust tests ([#365](https://github.com/uuidjs/uuid/issues/365)) ([7fedc79](https://github.com/uuidjs/uuid/commit/7fedc79ac8fda4bfd1c566c7f05ef4ac13b2db48))
-- add note about removal of default export ([#372](https://github.com/uuidjs/uuid/issues/372)) ([12749b7](https://github.com/uuidjs/uuid/commit/12749b700eb49db8a9759fd306d8be05dbfbd58c)), closes [#370](https://github.com/uuidjs/uuid/issues/370)
-- deprecated deep requiring of the different algorithm versions ([#361](https://github.com/uuidjs/uuid/issues/361)) ([c0bdf15](https://github.com/uuidjs/uuid/commit/c0bdf15e417639b1aeb0b247b2fb11f7a0a26b23))
-
-## [3.4.0](https://github.com/uuidjs/uuid/compare/v3.3.3...v3.4.0) (2020-01-16)
-
-### Features
-
-- rename repository to github:uuidjs/uuid ([#351](https://github.com/uuidjs/uuid/issues/351)) ([e2d7314](https://github.com/uuidjs/uuid/commit/e2d7314)), closes [#338](https://github.com/uuidjs/uuid/issues/338)
-
-## [3.3.3](https://github.com/uuidjs/uuid/compare/v3.3.2...v3.3.3) (2019-08-19)
-
-### Bug Fixes
-
-- no longer run ci tests on node v4
-- upgrade dependencies
-
-## [3.3.2](https://github.com/uuidjs/uuid/compare/v3.3.1...v3.3.2) (2018-06-28)
-
-### Bug Fixes
-
-- typo ([305d877](https://github.com/uuidjs/uuid/commit/305d877))
-
-## [3.3.1](https://github.com/uuidjs/uuid/compare/v3.3.0...v3.3.1) (2018-06-28)
-
-### Bug Fixes
-
-- fix [#284](https://github.com/uuidjs/uuid/issues/284) by setting function name in try-catch ([f2a60f2](https://github.com/uuidjs/uuid/commit/f2a60f2))
-
-# [3.3.0](https://github.com/uuidjs/uuid/compare/v3.2.1...v3.3.0) (2018-06-22)
-
-### Bug Fixes
-
-- assignment to readonly property to allow running in strict mode ([#270](https://github.com/uuidjs/uuid/issues/270)) ([d062fdc](https://github.com/uuidjs/uuid/commit/d062fdc))
-- fix [#229](https://github.com/uuidjs/uuid/issues/229) ([c9684d4](https://github.com/uuidjs/uuid/commit/c9684d4))
-- Get correct version of IE11 crypto ([#274](https://github.com/uuidjs/uuid/issues/274)) ([153d331](https://github.com/uuidjs/uuid/commit/153d331))
-- mem issue when generating uuid ([#267](https://github.com/uuidjs/uuid/issues/267)) ([c47702c](https://github.com/uuidjs/uuid/commit/c47702c))
-
-### Features
-
-- enforce Conventional Commit style commit messages ([#282](https://github.com/uuidjs/uuid/issues/282)) ([cc9a182](https://github.com/uuidjs/uuid/commit/cc9a182))
-
-## [3.2.1](https://github.com/uuidjs/uuid/compare/v3.2.0...v3.2.1) (2018-01-16)
-
-### Bug Fixes
-
-- use msCrypto if available. Fixes [#241](https://github.com/uuidjs/uuid/issues/241) ([#247](https://github.com/uuidjs/uuid/issues/247)) ([1fef18b](https://github.com/uuidjs/uuid/commit/1fef18b))
-
-# [3.2.0](https://github.com/uuidjs/uuid/compare/v3.1.0...v3.2.0) (2018-01-16)
-
-### Bug Fixes
-
-- remove mistakenly added typescript dependency, rollback version (standard-version will auto-increment) ([09fa824](https://github.com/uuidjs/uuid/commit/09fa824))
-- use msCrypto if available. Fixes [#241](https://github.com/uuidjs/uuid/issues/241) ([#247](https://github.com/uuidjs/uuid/issues/247)) ([1fef18b](https://github.com/uuidjs/uuid/commit/1fef18b))
-
-### Features
-
-- Add v3 Support ([#217](https://github.com/uuidjs/uuid/issues/217)) ([d94f726](https://github.com/uuidjs/uuid/commit/d94f726))
-
-# [3.1.0](https://github.com/uuidjs/uuid/compare/v3.1.0...v3.0.1) (2017-06-17)
-
-### Bug Fixes
-
-- (fix) Add .npmignore file to exclude test/ and other non-essential files from packing. (#183)
-- Fix typo (#178)
-- Simple typo fix (#165)
-
-### Features
-
-- v5 support in CLI (#197)
-- V5 support (#188)
-
-# 3.0.1 (2016-11-28)
-
-- split uuid versions into separate files
-
-# 3.0.0 (2016-11-17)
-
-- remove .parse and .unparse
-
-# 2.0.0
-
-- Removed uuid.BufferClass
-
-# 1.4.0
-
-- Improved module context detection
-- Removed public RNG functions
-
-# 1.3.2
-
-- Improve tests and handling of v1() options (Issue #24)
-- Expose RNG option to allow for perf testing with different generators
-
-# 1.3.0
-
-- Support for version 1 ids, thanks to [@ctavan](https://github.com/ctavan)!
-- Support for node.js crypto API
-- De-emphasizing performance in favor of a) cryptographic quality PRNGs where available and b) more manageable code
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+Generated by [`auto-changelog`](https://github.com/CookPete/auto-changelog).
+
+## [v1.0.1](https://github.com/ljharb/util.promisify/compare/v1.0.0...v1.0.1) - 2020-01-16
+
+### Fixed
+
+- [Refactor] remove unnecessary duplication. Fixes #3. [`#3`](https://github.com/ljharb/util.promisify/issues/3)
+
+### Commits
+
+- [Tests] use shared travis-ci configs [`f1b5e43`](https://github.com/ljharb/util.promisify/commit/f1b5e43359e74a30f35bd10a33be765de73917c6)
+- [Tests] up to `node` `v10.0`, `v9.11`, `v8.11`, `v6.14`, `4.9`; use `nvm install-latest-npm`; pin included builds to LTS [`e89390f`](https://github.com/ljharb/util.promisify/commit/e89390f498f7eb5111188fff5260cbb9f5216cd3)
+- [meta] add `auto-changelog` [`fe8e751`](https://github.com/ljharb/util.promisify/commit/fe8e751819a1318d3c929b086c70308aed50715d)
+- [Tests] up to `node` `v11.0`, `v10.12`, `v8.12` [`e09b894`](https://github.com/ljharb/util.promisify/commit/e09b894291aef2991e5c553f0b64968e03b58262)
+- [Refactor] use `callBound` helper from `es-abstract` for robustness [`baa0cf6`](https://github.com/ljharb/util.promisify/commit/baa0cf697068573cbe650e01aa6774154dd3f454)
+- [actions] add automatic rebasing / merge commit blocking [`24912f4`](https://github.com/ljharb/util.promisify/commit/24912f41b30d88b8984fb07307f737de6f576873)
+- [Docs] Add usage information for the shim/monkey-patch [`38b1ee5`](https://github.com/ljharb/util.promisify/commit/38b1ee56b558019213a6fdc2553796e8cdaf773e)
+- [Refactor] use `__proto__` instead of ES6’s `Object.setPrototypeOf` [`02ec7e2`](https://github.com/ljharb/util.promisify/commit/02ec7e241caf8848c1e141c801f98ed31325b59a)
+- [meta] create FUNDING.yml [`076b8b5`](https://github.com/ljharb/util.promisify/commit/076b8b5d19783a0e4c932e41782846e431deeb7d)
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `safe-publish-latest` [`4cedaa9`](https://github.com/ljharb/util.promisify/commit/4cedaa9c6b0a77a0416b69d480b3b806c00dec6e)
+- Adds usage information to the README [`ddb4556`](https://github.com/ljharb/util.promisify/commit/ddb45562320ab8aea93dc0364640ea21ab68bfbb)
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `safe-publish-latest` [`95362c0`](https://github.com/ljharb/util.promisify/commit/95362c0e93186a30ede6333430ddfa0606a769b4)
+- [Dev Deps] update `@es-shims/api`, `@ljharb/eslint-config`, `eslint` [`fd79a58`](https://github.com/ljharb/util.promisify/commit/fd79a58573186c83d81777fa0b1ad293b2f475e3)
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config` [`2cf792b`](https://github.com/ljharb/util.promisify/commit/2cf792b9dcaab24b642ef1de8239ceb089fc5d38)
+- [Docs] Link to util.promisify-all [`032ff5c`](https://github.com/ljharb/util.promisify/commit/032ff5c6ee2958a02f56c770337441c3a587b88c)
+- [Tests] allow node 0.10 and 0.8 to fail again [`c2f8418`](https://github.com/ljharb/util.promisify/commit/c2f8418dfc36b83cd8a18b86a735c2936c6f5f9e)
+- [Tests] remove mistakenly added travis jobs [`13a242f`](https://github.com/ljharb/util.promisify/commit/13a242fb33dcbd4e2872436f2e430e62526fb147)
+- [Tests] on `node` `v10.1` [`8244578`](https://github.com/ljharb/util.promisify/commit/82445786197fd3e54aeffaa2fe0f1da38bcafec4)
+- [meta] add `funding` field [`e1645ca`](https://github.com/ljharb/util.promisify/commit/e1645ca10648d1ae917e3f5ae954b37de338dc20)
+- [New] add `auto` entry point [`2c48047`](https://github.com/ljharb/util.promisify/commit/2c480479d67646fb2bfb92a4e5d50ff14bcdca3c)
+- [Fix] use `has-symbols` package to ensure we support Symbol shams too. [`75135c8`](https://github.com/ljharb/util.promisify/commit/75135c8a48ea4e1be1cfe7a95af11905818303e7)
+- [Deps] update `es-abstract` [`32aa5cc`](https://github.com/ljharb/util.promisify/commit/32aa5ccd3ee7513edef99ed7d516d6c0f4901883)
+- [Dev Deps] update `eslint` [`c3043e6`](https://github.com/ljharb/util.promisify/commit/c3043e6e562847102e9136479268777bc07e9b26)
+- [Deps] update `object.getownpropertydescriptors` [`521ed25`](https://github.com/ljharb/util.promisify/commit/521ed25d40dc230b38ac3755036219fbaf94694c)
+- [Deps] update `has-symbol` [`16d91ec`](https://github.com/ljharb/util.promisify/commit/16d91ecc0016c31e49b7c3da938c19132c243732)
+- [Deps] update `define-properties` [`532915e`](https://github.com/ljharb/util.promisify/commit/532915ed58fe6f0edc3670837b510e09fb39b99a)
+- [Tests] `npm` v5+ breaks on node &lt; v4 [`0647c63`](https://github.com/ljharb/util.promisify/commit/0647c63d932451c043c3e8f3b003c636057f035a)
+
+## v1.0.0 - 2017-05-30
+
+### Commits
+
+- Dotfiles. [`02c20cb`](https://github.com/ljharb/util.promisify/commit/02c20cb4eb01cf656102f57f71635785114f1d09)
+- Initial implementation. [`05ff048`](https://github.com/ljharb/util.promisify/commit/05ff0480448f019a85675ce81ecc4e9bdc099286)
+- Initial commit [`9472155`](https://github.com/ljharb/util.promisify/commit/947215502491bb1b3238aa0ac5c67258e41db3a8)
+- package.json [`e0302c0`](https://github.com/ljharb/util.promisify/commit/e0302c01e5e3b1dd78647303f9a4337b5bb63196)
+- Initial readme. [`5df78e1`](https://github.com/ljharb/util.promisify/commit/5df78e16e89e8328c61d6bbac85409a36560fe3b)
+- [Dev Deps] add `safe-publish-latest` [`596b6b4`](https://github.com/ljharb/util.promisify/commit/596b6b4fbce79dbaf5fff366454ab5b31d2eb993)
+- [Tests] add `npm run lint` [`54c2ccb`](https://github.com/ljharb/util.promisify/commit/54c2ccb85db682fc293b30a0bfece76d0a5c7c60)
+- [Dev Deps] add `@es-shims/api` [`d9014f1`](https://github.com/ljharb/util.promisify/commit/d9014f12add2fb3fe743647df614c69ed305a824)
+- [Tests] allow 0.10 and 0.8 to fail, for now. [`c5c7b61`](https://github.com/ljharb/util.promisify/commit/c5c7b619b88878fc715d1768b48bd45378c9f807)

@@ -1,19 +1,6 @@
-import { readFileSync, statSync, writeFile } from 'fs';
-import { format } from 'util';
-import { resolve } from 'path';
-export default {
-    fs: {
-        readFileSync,
-        writeFile
-    },
-    format,
-    resolve,
-    exists: (file) => {
-        try {
-            return statSync(file).isFile();
-        }
-        catch (err) {
-            return false;
-        }
-    }
-};
+
+/**
+ * For Node.js, simply re-export the core `util.deprecate` function.
+ */
+
+module.exports = require('util').deprecate;
