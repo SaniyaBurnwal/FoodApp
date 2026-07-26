@@ -1,25 +1,55 @@
-/**
- * Convert a typed array to a Buffer without a copy
- *
- * Author:   Feross Aboukhadijeh <https://feross.org>
- * License:  MIT
- *
- * `npm install typedarray-to-buffer`
- */
+'use strict'
 
-var isTypedArray = require('is-typedarray').strict
+var nextTick = nextTickArgs
+process.nextTick(upgrade, 42) // pass 42 and see if upgrade is called with it
 
-module.exports = function typedarrayToBuffer (arr) {
-  if (isTypedArray(arr)) {
-    // To avoid a copy, use the typed array's underlying ArrayBuffer to back new Buffer
-    var buf = Buffer.from(arr.buffer)
-    if (arr.byteLength !== arr.buffer.byteLength) {
-      // Respect the "view", i.e. byteOffset and byteLength, without doing a copy
-      buf = buf.slice(arr.byteOffset, arr.byteOffset + arr.byteLength)
-    }
-    return buf
-  } else {
-    // Pass through all other types to `Buffer.from`
-    return Buffer.from(arr)
+module.exports = thunky
+
+function thunky (fn) {
+  var state = run
+  return thunk
+
+  function thunk (callback) {
+    state(callback || noop)
   }
+
+  function run (callback) {
+    var stack = [callback]
+    state = wait
+    fn(done)
+
+    function wait (callback) {
+      stack.push(callback)
+    }
+
+    function done (err) {
+      var args = arguments
+      state = isError(err) ? run : finished
+      while (stack.length) finished(stack.shift())
+
+      function finished (callback) {
+        nextTick(apply, callback, args)
+      }
+    }
+  }
+}
+
+function isError (err) { // inlined from util so this works in the browser
+  return Object.prototype.toString.call(err) === '[object Error]'
+}
+
+function noop () {}
+
+function apply (callback, args) {
+  callback.apply(null, args)
+}
+
+function upgrade (val) {
+  if (val === 42) nextTick = process.nextTick
+}
+
+function nextTickArgs (fn, a, b) {
+  process.nextTick(function () {
+    fn(a, b)
+  })
 }

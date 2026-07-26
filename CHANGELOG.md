@@ -1,79 +1,371 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
+and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v1.1.0](https://github.com/ljharb/unbox-primitive/compare/v1.0.2...v1.1.0) - 2024-12-15
+## [Unreleased]
 
-### Commits
+## [3.15.0] - 2023-12-14
 
-- [meta] use `npmignore` to autogenerate an npmignore file [`348a5ad`](https://github.com/ljharb/unbox-primitive/commit/348a5ad5d353e7fcd6353934073ca3a982f40a4e)
-- [New] add types [`a324230`](https://github.com/ljharb/unbox-primitive/commit/a32423092f81bfbf3c4dff77a5fa549ffae87daa)
-- [Tests] use `es-value-fixtures` [`a321ae5`](https://github.com/ljharb/unbox-primitive/commit/a321ae56aaf30ea843c708bf6c6c13ee52eee205)
-- [actions] split out node 10-20, and 20+ [`04a0e0d`](https://github.com/ljharb/unbox-primitive/commit/04a0e0d09907c2643e25ad69b49864c1c34e59d0)
-- [Dev Deps] update `@ljharb/eslint-config`, `auto-changelog`, `npmignore`, `object-inspect`, `object-is`, `tape` [`7fff971`](https://github.com/ljharb/unbox-primitive/commit/7fff97161bf83ebe348290ef27992af630ca92e9)
-- [actions] update rebase action [`91d6807`](https://github.com/ljharb/unbox-primitive/commit/91d6807c562a39ce876feda777b641eb0ee64ce9)
-- [Deps] update `call-bind`, `has-symbols`, `which-boxed-primitive` [`f8b6597`](https://github.com/ljharb/unbox-primitive/commit/f8b6597e071d05f0792f6eef0e2fbc30ddfe43d4)
-- [Dev Deps] update `aud`, `object-inspect`, `tape` [`b3362a1`](https://github.com/ljharb/unbox-primitive/commit/b3362a164fdbee9006be765d99d5d835d6493326)
-- [Refactor] use `call-bound` directly [`e29ff5f`](https://github.com/ljharb/unbox-primitive/commit/e29ff5f4cbcc58d32e670bce11d5c3137eae0c44)
-- [meta] add missing `engines.node` [`d3420bc`](https://github.com/ljharb/unbox-primitive/commit/d3420bc8cda471cf62119e08d9581b72962f74f6)
-- [Tests] replace `aud` with `npm audit` [`5e6a6d0`](https://github.com/ljharb/unbox-primitive/commit/5e6a6d0459b6fa8a812d00362fe60854333f1b64)
-- [Deps] update `which-boxed-primitive` [`0ff873d`](https://github.com/ljharb/unbox-primitive/commit/0ff873dadf31962c2f00e24d8d7d30cfa8c60ac6)
-- [Dev Deps] update `aud` [`dd0e373`](https://github.com/ljharb/unbox-primitive/commit/dd0e3733bb9db65d254492d6c1d1b710005b932f)
-- [Dev Deps] add missing peer dep [`4f79b24`](https://github.com/ljharb/unbox-primitive/commit/4f79b240212d847276dba9a0044f356506eaeaa6)
+### Added
 
-## [v1.0.2](https://github.com/ljharb/unbox-primitive/compare/v1.0.1...v1.0.2) - 2022-04-24
+- Add support for extends as array of strings to v3 (backport of #245). See PR #260. Thanks to [@domdomegg](https://github.com/domdomegg) for this PR!
 
-### Commits
+## [3.14.1] - 2022-03-22
 
-- [actions] reuse common workflows [`e6420b9`](https://github.com/ljharb/unbox-primitive/commit/e6420b94eed3558ef3ecddbd3d85fe2f400d1db1)
-- [actions] update codecov uploader [`b90aff2`](https://github.com/ljharb/unbox-primitive/commit/b90aff2b17b70c1a7200eb5faa3f9e64ebf055f9)
-- [readme] add github actions/codecov badges; update URLs [`bcc39b9`](https://github.com/ljharb/unbox-primitive/commit/bcc39b9d6d101bad199c95604f94999f80d6da97)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `object-inspect`, `safe-publish-latest`, `tape` [`a704a32`](https://github.com/ljharb/unbox-primitive/commit/a704a32ec4af43cd0631317ae3a537012adc1610)
-- [Refactor] use `call-bind` instead of `function-bind` [`0a609f1`](https://github.com/ljharb/unbox-primitive/commit/0a609f1be6269cbf501482aacd9a0a1bd8596108)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `auto-changelog`, `object-inspect`, `safe-publish-latest`, `tape` [`6a45317`](https://github.com/ljharb/unbox-primitive/commit/6a4531757d74af97c9d0770b102f81ce6ff0a8dc)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `auto-changelog`, `object-inspect`, `tape` [`795c76f`](https://github.com/ljharb/unbox-primitive/commit/795c76f14c4df3c7ae934f7b14a98c07951ea9c7)
-- [Deps] update `has-bigints`, `has-symbols` [`257a065`](https://github.com/ljharb/unbox-primitive/commit/257a065496b4190c296d674bff342ea40cf8e176)
+### Fixed
 
-## [v1.0.1](https://github.com/ljharb/unbox-primitive/compare/v1.0.0...v1.0.1) - 2021-03-25
+- Use minimist 1.2.6 for all depencencies becuase of pollution vulnerability. See PR [#197](https://github.com/dividab/tsconfig-paths/pull/197). Thanks to [@gopijaganthan](https://github.com/gopijaganthan) for this fix!
 
-### Commits
+## [3.14.0] - 2022-03-13
 
-- [Tests] use shared travis-ci configs [`f977e5f`](https://github.com/ljharb/unbox-primitive/commit/f977e5f8fa532dbc519bd78a48cf4b81c14720fe)
-- [Tests] migrate tests to Github Actions [`b89def6`](https://github.com/ljharb/unbox-primitive/commit/b89def60908a236aa1b5c756426f7cc61cf458dd)
-- [meta] do not publish github action workflow files [`325d1f1`](https://github.com/ljharb/unbox-primitive/commit/325d1f1836cecbe57ee148545de5aefcbe7a7dce)
-- readme [`810cd70`](https://github.com/ljharb/unbox-primitive/commit/810cd70f7b3c670cd55eae64466c89595175ee2a)
-- [Tests] run `nyc` on all tests; use `tape` runner [`2f5fb08`](https://github.com/ljharb/unbox-primitive/commit/2f5fb08930c8f8e5e069ac61891dc9bd76cb762b)
-- [meta] add `auto-changelog` [`03ed375`](https://github.com/ljharb/unbox-primitive/commit/03ed3759284493f19323eb0500f726d0851fc085)
-- [actions] add automatic rebasing / merge commit blocking [`6dec48d`](https://github.com/ljharb/unbox-primitive/commit/6dec48daa357fa79a5cac1add9ca33f7b56276cc)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `object-inspect`, `object-is`, `tape` [`528ed88`](https://github.com/ljharb/unbox-primitive/commit/528ed8826664b67f7eaf1fe7e2031c063b2d315f)
-- [actions] check out the entire repo [`5095b29`](https://github.com/ljharb/unbox-primitive/commit/5095b2981f44a78b3f9bfaa1a526f17a6823e383)
-- [actions] add "Allow Edits" workflow [`5aa26d7`](https://github.com/ljharb/unbox-primitive/commit/5aa26d7f0c32e0e78ba4bf3e5f9abb5478fd97fa)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `object-inspect`, `object-is`, `safe-publish-latest`, `tape` [`afc18c6`](https://github.com/ljharb/unbox-primitive/commit/afc18c6cb59cbb6b514e0d8004c6fd264e2a27eb)
-- [readme] remove travis badge [`a025899`](https://github.com/ljharb/unbox-primitive/commit/a0258997a21604e1266840e6d167f0a870966e9b)
-- [Dev Deps] update `auto-changelog` [`9219a32`](https://github.com/ljharb/unbox-primitive/commit/9219a32844b2ce3ed0a7ea12a5910a3e92424e4e)
-- [readme] Fix missing paren in example [`73f5a33`](https://github.com/ljharb/unbox-primitive/commit/73f5a3340ca1ab6c227ed4632117d816d5e35317)
-- [Dev Deps] update `@ljharb/eslint-config`, `tape` [`e450acc`](https://github.com/ljharb/unbox-primitive/commit/e450accb54ab452f240768a5f0a98e5887b0ba8c)
-- [Deps] update `has-bigints`, `has-symbols`, `which-boxed-primitive` [`a4279b5`](https://github.com/ljharb/unbox-primitive/commit/a4279b504732002074e5dcb9c5509038d605f563)
-- [Dev Deps] update `auto-changelog`, `in-publish`, `tape` [`b351548`](https://github.com/ljharb/unbox-primitive/commit/b351548d31789c0d0af4c3bce55c2bdefe51b40f)
-- [actions] switch Automatic Rebase workflow to `pull_request_target` event [`f600382`](https://github.com/ljharb/unbox-primitive/commit/f600382db83025270969354ac52a72aadb0a7ffa)
-- [readme] fix travis links [`4d02fa9`](https://github.com/ljharb/unbox-primitive/commit/4d02fa9a4990812b048f8aefe6e46be80b68beef)
-- [Dev Deps] update `auto-changelog`; add `aud` [`07e74a3`](https://github.com/ljharb/unbox-primitive/commit/07e74a3ca90688122593095849757e3c05c46db0)
-- [meta] add `funding` field [`7ca4bd7`](https://github.com/ljharb/unbox-primitive/commit/7ca4bd71196e90a2fc9c7cb0ef4e30f949d5a853)
-- [Tests] only audit prod deps [`47d8d5f`](https://github.com/ljharb/unbox-primitive/commit/47d8d5fbd58bf472e7e83f79ccef7e8379d06b35)
-- [Deps] update `has-symbols` [`c70c15e`](https://github.com/ljharb/unbox-primitive/commit/c70c15e924191d11a271cff25bde657b0c3c3016)
+### Added
 
-## v1.0.0 - 2019-08-10
+- Support for path mapping starting with `/`. See PR [#180](https://github.com/dividab/tsconfig-paths/pull/180), issue [#113](https://github.com/dividab/tsconfig-paths/issues/113), and issue [#128](https://github.com/dividab/tsconfig-paths/issues/128). Thanks to [@benevbright](https://github.com/benevbright) for this fix!
 
-### Commits
+## [3.13.0] - 2022-03-03
 
-- [Tests] add `.travis.yml` [`8c9a5ef`](https://github.com/ljharb/unbox-primitive/commit/8c9a5efdb54be4866e2884bf32cbe830788b2c2a)
-- Initial commit [`feaff15`](https://github.com/ljharb/unbox-primitive/commit/feaff159eb999adc8763ff3e51d2d3d56d6164f8)
-- [Tests] add tests [`3dd18d6`](https://github.com/ljharb/unbox-primitive/commit/3dd18d65748efb4af9b8ca66f8d8c5521d8f2dec)
-- implementation [`472fb41`](https://github.com/ljharb/unbox-primitive/commit/472fb41d049ddee80ebf3219a5837e639a6e9341)
-- npm init [`e9e426f`](https://github.com/ljharb/unbox-primitive/commit/e9e426fc90b9a3f07ffc48db75f78c414f77bc2b)
-- [Tests] add linting [`139e74b`](https://github.com/ljharb/unbox-primitive/commit/139e74b94cdfd187b43b24de76c6d84af21ee467)
-- [meta] create FUNDING.yml [`a9509e1`](https://github.com/ljharb/unbox-primitive/commit/a9509e122163e2b9d98af421e5c0575df36e2310)
-- Only apps should have lockfiles [`b3d0834`](https://github.com/ljharb/unbox-primitive/commit/b3d0834d69dcbf4cbc1e61ccfaef05acf96cf630)
+### Added
+
+- Include file extension in paths resolved from package.json "main" field. See PR [#135](https://github.com/dividab/tsconfig-paths/pull/135) and issue [#133](https://github.com/dividab/tsconfig-paths/issues/133). Thanks to [@katywings](https://github.com/katywings) for this fix!
+
+## [3.12.0] - 2021-08-24
+
+- Add support for baseUrl override using TS_NODE_BASEURL env var #185 and #114. Thanks to @ejhayes and @information-security for these PRs!
+
+## [3.11.0] - 2021-08-24
+
+- Reverted upgrade of json5 due to being a breaking change. See PR #173.
+
+## [3.10.1] - 2021-07-06
+
+### Fixed
+
+- Add register.js to published files
+
+## [3.10.0] - 2021-07-06
+
+### Added
+
+- feat(tsconfig-loader): extends config from node_modules (#106). Thanks to @zorji for this PR!
+
+### Fixed
+
+- Update CHANGELOG.md (#96). Thanks to @OliverJAsh for this PR!
+- Fix "bootstraping" typo (#111). Thanks to @KRMisha for this PR!
+- Update Readme fixes #116 (#123). Thanks to @benwinding for this PR!
+- Fixed typo (#144). Thanks to @mprinc for this PR!
+- [TYPO] src/mapping-entry.ts (#145). Thanks to @mprinc for this PR!
+- docs(README): fix typos (#156). Thanks to @PiDelport for this PR!
+- deps: bump json5 to use type definition provided officially (#158). Thanks to @koba04 for this PR!
+- Update tsconfig-loader.ts (#161). Thanks to @fecqs for this PR!
+- fix typo (#165). Thanks to @wonda-tea-coffee for this PR!
+- Add file extenstion to typings property value (#151). Thanks to @dangrussell for this PR!
+
+## [3.9.0] - 2019-09-12
+
+### Added
+
+- Make extension config override instead of deep merge. See PR [#95](https://github.com/dividab/tsconfig-paths/pull/95) and issue [#94](https://github.com/dividab/tsconfig-paths/issues/94). Thanks to [@OliverJAsh](https://github.com/OliverJAsh) for this addition!
+
+## [3.8.0] - 2019-02-05
+
+### Added
+
+- Add option to avoid adding a match-all rule. See PR [#73](https://github.com/dividab/tsconfig-paths/pull/73) and issue [72](https://github.com/dividab/tsconfig-paths/issues/72). Thanks to [@Swatinem](https://github.com/Swatinem) for this addition!
+
+## [3.7.0] - 2018-11-11
+
+### Added
+
+- Allow cleanup of register(). See PR [#64](https://github.com/dividab/tsconfig-paths/pull/64) and issue [63](https://github.com/dividab/tsconfig-paths/issues/63). Thanks to [@TylorS](https://github.com/TylorS) for this addition!
+
+## [3.6.0] - 2018-09-10
+
+### Added
+
+- Prefer Node's core modules over file modules. See PR [#60](https://github.com/dividab/tsconfig-paths/pull/60) and issue [56](https://github.com/dividab/tsconfig-paths/issues/56). Thanks to @ljani for this addition!
+
+## [3.5.0] - 2018-07-28
+
+### Added
+
+- Add support for trailing commas in tsconfig.json (use JSON5 to parse). See issue [#48](https://github.com/dividab/tsconfig-paths/issues/48), and PR [#58](https://github.com/dividab/tsconfig-paths/pull/58). Thanks to [@jshado1](https://github.com/jshado1) for this addition!
+
+## [3.4.2] - 2018-06-30
+
+### Fixed
+
+- Do not resolve directories, only files, sse issue [#51](https://github.com/dividab/tsconfig-paths/issues/51).
+
+## [3.4.1] - 2018-06-24
+
+### Fixed
+
+- Ignore field name mappings in package.json files that are not paths of existing files [#46](https://github.com/dividab/tsconfig-paths/pull/45). Thanks to [@christoffer](https://github.com/christoffer) for this fix!
+
+## [3.4.0] - 2018-06-12
+
+### Added
+
+- Add support for providing a list of field names to try instead of just using "main", [#45](https://github.com/dividab/tsconfig-paths/pull/45). Thanks to [@christoffer-dropbox](https://github.com/christoffer-dropbox) for this addition!
+
+## [3.3.2] - 2018-05-07
+
+### Fixed
+
+- Adding json file extension to extends property, [#40](https://github.com/dividab/tsconfig-paths/pull/40). Thanks to [@cwhite-connectfirst](https://github.com/cwhite-connectfirst) for this fixing this!
+
+## [3.3.1] - 2018-04-17
+
+### Fixed
+
+- Fix project undefined error when calling register, [#37](https://github.com/dividab/tsconfig-paths/issues/37). Thanks to [@natedanner](https://github.com/natedanner) for this fixing this!
+
+## [3.3.0] - 2018-04-14
+
+### Added
+
+- Add possibility to indicate explicitly tsconfig location, [#35](https://github.com/dividab/tsconfig-paths/issues/35). Thanks to [@procopenco](https://github.com/procopenco) for this adding this!
+
+## [3.2.0] - 2018-03-31
+
+### Added
+
+- Added support for passing a filename as cwd, see issue [#31](https://github.com/dividab/tsconfig-paths/issues/31) and PR [#32](https://github.com/dividab/tsconfig-paths/pull/32). Thanks to [@amodm](https://github.com/amodm) for this adding this!
+
+## [3.1.3] - 2018-03-14
+
+### Fixed
+
+- Fix async recursion, see [#30](https://github.com/dividab/tsconfig-paths/pull/30). Thanks to [@Nayni](https://github.com/Nayni) for this fix!
+
+## [3.1.2] - 2018-03-13
+
+### Fixed
+
+- Fix a forgotten return when doneCallback is invoked, see [#29](https://github.com/dividab/tsconfig-paths/pull/29). Thanks to [@Nayni](https://github.com/Nayni) for this fix!
+
+## [3.1.1] - 2018-01-13
+
+### Fixed
+
+- Fix read json async when it does not exist
+
+## [3.1.0] - 2018-01-13
+
+### Added
+
+- Implement default async json reader function.
+
+## [3.0.0] - 2018-01-13
+
+### Changed
+
+- Remove parameter `absoluteSourceFileName` from the `MatchPath` and `matchFromAbsolutePaths` functions. It was not used internally.
+- `matchFromAbsolutePaths` now accepts a pre-sorted array of `MappingEntry`s instead of a dictionary. This was done so the sorting could be done once which should give better performance.
+
+### Added
+
+- `createMatchPathAsync`, creates an async version of the `MatchPath` function. Can be used for example by webpack plugins.
+- `matchFromAbsolutePathsAsync`, async version of `matchFromAbsolutePaths`.
+
+## [2.7.3]
+
+### Fixed
+
+- Only resolve path if tsconfig present [#25](https://github.com/dividab/tsconfig-paths/pull/25). Thanks to @nicoschoenmaker for the PR.
+
+## [2.7.2]
+
+### Fixed
+
+- Return absolute path to tsconfig.json.
+
+## [2.7.1]
+
+### Fixed
+
+- Remove left over console.log.
+
+## [2.7.0]
+
+### Added
+
+- Support `baseUrl` to exist in base tsconfig.json when using `extends`, see [#23](https://github.com/dividab/tsconfig-paths/issues/23).
+
+## [2.6.0]
+
+### Added
+
+- Add `baseUrl` and `configFileAbsolutePath` to the result of `loadConfig`.
+
+## [2.5.0]
+
+### Added
+
+- New function in Programmatic API `loadConfig`.
+
+## [2.4.3]
+
+### Fixed
+
+- Export MatchPth typing.
+
+## [2.4.2]
+
+### Fixed
+
+- Add missing types field in package.json.
+
+## [2.4.1]
+
+### Fixed
+
+- Include declaration files. Fixes [#22](https://github.com/dividab/tsconfig-paths/issues/22).
+
+## [2.4.0]
+
+### Changed
+
+- Removed dependency for package `tsconfig`.
+
+### Fixed
+
+- Support for config inheritance with `extends`. Fixes [#17](https://github.com/dividab/tsconfig-paths/issues/17).
+
+## [2.2.0]
+
+### Fixed
+
+- Fixed issue [#7](https://github.com/dividab/tsconfig-paths/issues/7).
+
+## [2.1.2]
+
+### Fixed
+
+- Fixed issue [#6](https://github.com/dividab/tsconfig-paths/issues/6).
+
+## [2.1.1]
+
+### Fixed
+
+- Fixed issue [#4](https://github.com/dividab/tsconfig-paths/issues/4)
+
+## [2.1.0]
+
+### Fixed
+
+- Fixed issue [#3](https://github.com/dividab/tsconfig-paths/issues/3)
+
+## [2.0.0]
+
+### Added
+
+- We now look at `process.env.TS_NODE_PROJECT`
+- Functionality to bootstrap tsconfig-paths. Documentation in [README](https://github.com/dividab/tsconfig-paths/blob/master/README.md)
+
+### Changed
+
+- Changed signature for `createMatchPath`. Now only takes absoluteUrl and paths.
+
+## [1.1.0]
+
+### Added
+
+- More explanation to readme.
+- Match all extensions in require.extensions.
+- Match longest pattern prefix first as typesript does.
+- Match file in main field of package.json.
+- Check for index files explicitly.
+
+## [1.0.0] - 2016-12-30
+
+- First stable release.
+
+## [0.4.0] - 2016-12-30
+
+### Changed
+
+- Renamed project to `tsocnfig-paths`.
+
+## [0.3.0] - 2016-12-30
+
+### Added
+
+- API documentation.
+- `createMatchPath` function.
+- `matchFromAbsolutePaths` function.
+
+### Removed
+
+- `findPath` function.
+
+## [0.2.1] - 2016-12-29
+
+### Fixed
+
+- `tsconfig-paths/register` was not available.
+
+## [0.2.0] - 2016-12-29
+
+### Fixed
+
+- Paths for files in sub-dirs.
+
+### Added
+
+- Programmatic use.
+
+## [0.1.2] - 2016-12-28
+
+### Fixed
+
+- Fixed wrong name of the package in README.
+- Add missing files on publish.
+
+## [0.1.1] - 2016-12-28
+
+### Added
+
+- Loading of tsconfig.
+- Example.
+- Publish scripts.
+
+## [0.1.0] - 2016-12-28
+
+- Initial version.
+
+[unreleased]: https://github.com/dividab/tsconfig-paths/compare/v3.9.0...master
+[3.9.0]: https://github.com/dividab/tsconfig-paths/compare/v3.8.0...v3.9.0
+[3.8.0]: https://github.com/dividab/tsconfig-paths/compare/3.7.0...3.8.0
+[3.7.0]: https://github.com/dividab/tsconfig-paths/compare/3.6.0...3.7.0
+[3.6.0]: https://github.com/dividab/tsconfig-paths/compare/3.5.0...3.6.0
+[3.5.0]: https://github.com/dividab/tsconfig-paths/compare/3.4.2...3.5.0
+[3.4.2]: https://github.com/dividab/tsconfig-paths/compare/3.4.1...3.4.2
+[3.4.1]: https://github.com/dividab/tsconfig-paths/compare/3.4.0...3.4.1
+[3.4.0]: https://github.com/dividab/tsconfig-paths/compare/3.3.2...3.4.0
+[3.3.2]: https://github.com/dividab/tsconfig-paths/compare/3.3.1...3.3.2
+[3.3.1]: https://github.com/dividab/tsconfig-paths/compare/3.3.0...3.3.1
+[3.3.0]: https://github.com/dividab/tsconfig-paths/compare/3.2.0...3.3.0
+[3.2.0]: https://github.com/dividab/tsconfig-paths/compare/3.1.3...3.2.0
+[3.1.3]: https://github.com/dividab/tsconfig-paths/compare/3.1.2...3.1.3
+[3.1.2]: https://github.com/dividab/tsconfig-paths/compare/3.1.1...3.1.2
+[3.1.1]: https://github.com/dividab/tsconfig-paths/compare/3.1.0...3.1.1
+[3.1.0]: https://github.com/dividab/tsconfig-paths/compare/3.0.0...3.1.0
+[3.0.0]: https://github.com/dividab/tsconfig-paths/compare/2.7.3...3.0.0
+[2.7.3]: https://github.com/dividab/tsconfig-paths/compare/2.7.2...2.7.3
+[2.7.2]: https://github.com/dividab/tsconfig-paths/compare/2.7.1...2.7.2
+[2.7.1]: https://github.com/dividab/tsconfig-paths/compare/2.7.0...2.7.1
+[2.7.0]: https://github.com/dividab/tsconfig-paths/compare/2.6.0...2.7.0
+[2.6.0]: https://github.com/dividab/tsconfig-paths/compare/2.5.0...2.6.0
+[2.5.0]: https://github.com/dividab/tsconfig-paths/compare/2.4.3...2.5.0
+[2.4.3]: https://github.com/dividab/tsconfig-paths/compare/2.4.2...2.4.3
+[2.4.2]: https://github.com/dividab/tsconfig-paths/compare/2.4.1...2.4.2
+[2.4.1]: https://github.com/dividab/tsconfig-paths/compare/2.4.0...2.4.1
+[2.4.0]: https://github.com/dividab/tsconfig-paths/compare/2.2.0...2.4.0
+[2.2.0]: https://github.com/dividab/tsconfig-paths/compare/2.1.2...2.2.0
+[2.1.2]: https://github.com/dividab/tsconfig-paths/compare/2.1.1...2.1.2
+[2.1.1]: https://github.com/dividab/tsconfig-paths/compare/2.1.0...2.1.1
