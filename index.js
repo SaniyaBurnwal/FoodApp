@@ -1,60 +1,25 @@
-module.exports = new Set([
-	// Non-binary properties:
-	'General_Category',
-	'Script',
-	'Script_Extensions',
-	// Binary properties:
-	'Alphabetic',
-	'Any',
-	'ASCII',
-	'ASCII_Hex_Digit',
-	'Assigned',
-	'Bidi_Control',
-	'Bidi_Mirrored',
-	'Case_Ignorable',
-	'Cased',
-	'Changes_When_Casefolded',
-	'Changes_When_Casemapped',
-	'Changes_When_Lowercased',
-	'Changes_When_NFKC_Casefolded',
-	'Changes_When_Titlecased',
-	'Changes_When_Uppercased',
-	'Dash',
-	'Default_Ignorable_Code_Point',
-	'Deprecated',
-	'Diacritic',
-	'Emoji',
-	'Emoji_Component',
-	'Emoji_Modifier',
-	'Emoji_Modifier_Base',
-	'Emoji_Presentation',
-	'Extended_Pictographic',
-	'Extender',
-	'Grapheme_Base',
-	'Grapheme_Extend',
-	'Hex_Digit',
-	'ID_Continue',
-	'ID_Start',
-	'Ideographic',
-	'IDS_Binary_Operator',
-	'IDS_Trinary_Operator',
-	'Join_Control',
-	'Logical_Order_Exception',
-	'Lowercase',
-	'Math',
-	'Noncharacter_Code_Point',
-	'Pattern_Syntax',
-	'Pattern_White_Space',
-	'Quotation_Mark',
-	'Radical',
-	'Regional_Indicator',
-	'Sentence_Terminal',
-	'Soft_Dotted',
-	'Terminal_Punctuation',
-	'Unified_Ideograph',
-	'Uppercase',
-	'Variation_Selector',
-	'White_Space',
-	'XID_Continue',
-	'XID_Start'
-]);
+/**
+ * Convert a typed array to a Buffer without a copy
+ *
+ * Author:   Feross Aboukhadijeh <https://feross.org>
+ * License:  MIT
+ *
+ * `npm install typedarray-to-buffer`
+ */
+
+var isTypedArray = require('is-typedarray').strict
+
+module.exports = function typedarrayToBuffer (arr) {
+  if (isTypedArray(arr)) {
+    // To avoid a copy, use the typed array's underlying ArrayBuffer to back new Buffer
+    var buf = Buffer.from(arr.buffer)
+    if (arr.byteLength !== arr.buffer.byteLength) {
+      // Respect the "view", i.e. byteOffset and byteLength, without doing a copy
+      buf = buf.slice(arr.byteOffset, arr.byteOffset + arr.byteLength)
+    }
+    return buf
+  } else {
+    // Pass through all other types to `Buffer.from`
+    return Buffer.from(arr)
+  }
+}
