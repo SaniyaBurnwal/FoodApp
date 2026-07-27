@@ -1,55 +1,13 @@
-'use strict'
+'use strict';
+const fs = require('fs');
+const os = require('os');
 
-var nextTick = nextTickArgs
-process.nextTick(upgrade, 42) // pass 42 and see if upgrade is called with it
+const tempDirectorySymbol = Symbol.for('__RESOLVED_TEMP_DIRECTORY__');
 
-module.exports = thunky
-
-function thunky (fn) {
-  var state = run
-  return thunk
-
-  function thunk (callback) {
-    state(callback || noop)
-  }
-
-  function run (callback) {
-    var stack = [callback]
-    state = wait
-    fn(done)
-
-    function wait (callback) {
-      stack.push(callback)
-    }
-
-    function done (err) {
-      var args = arguments
-      state = isError(err) ? run : finished
-      while (stack.length) finished(stack.shift())
-
-      function finished (callback) {
-        nextTick(apply, callback, args)
-      }
-    }
-  }
+if (!global[tempDirectorySymbol]) {
+	Object.defineProperty(global, tempDirectorySymbol, {
+		value: fs.realpathSync(os.tmpdir())
+	});
 }
 
-function isError (err) { // inlined from util so this works in the browser
-  return Object.prototype.toString.call(err) === '[object Error]'
-}
-
-function noop () {}
-
-function apply (callback, args) {
-  callback.apply(null, args)
-}
-
-function upgrade (val) {
-  if (val === 42) nextTick = process.nextTick
-}
-
-function nextTickArgs (fn, a, b) {
-  process.nextTick(function () {
-    fn(a, b)
-  })
-}
+module.exports = global[tempDirectorySymbol];

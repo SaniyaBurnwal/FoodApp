@@ -1,10 +1,30 @@
-tmpl [![Build Status](https://secure.travis-ci.org/nshah/nodejs-tmpl.png)](http://travis-ci.org/nshah/nodejs-tmpl)
-====
+# temp-dir [![Build Status](https://travis-ci.org/sindresorhus/temp-dir.svg?branch=master)](https://travis-ci.org/sindresorhus/temp-dir)
 
-Simple string formatting using `{}`.
+> Get the real path of the system temp directory
 
-```javascript
-assert.equal(
-  tmpl('the answer is {answer}', { answer: 42 }),
-  'the answer is 42')
+[The `os.tmpdir()` built-in doesn't return the real path.](https://github.com/nodejs/node/issues/11422) That can cause problems when the returned path is a symlink, which is the case on macOS. Use this module to get the resolved path.
+
+
+## Install
+
 ```
+$ npm install temp-dir
+```
+
+
+## Usage
+
+```js
+const tempDirectory = require('temp-dir');
+
+console.log(tempDirectory);
+//=> '/private/var/folders/3x/jf5977fn79jbglr7rk0tq4d00000gn/T'
+
+console.log(require('os').tmpdir());
+//=> '/var/folders/3x/jf5977fn79jbglr7rk0tq4d00000gn/T' // <= Symlink
+```
+
+
+## License
+
+MIT © [Sindre Sorhus](https://sindresorhus.com)

@@ -1,73 +1,50 @@
 {
-  "name": "tinyglobby",
-  "version": "0.2.16",
-  "description": "A fast and minimal alternative to globby and fast-glob",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.cts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "./package.json": "./package.json"
-  },
-  "sideEffects": false,
+  "name": "svg-parser",
+  "version": "2.0.4",
+  "description": "Create a JSON-friendly object from an SVG string",
+  "main": "dist/svg-parser.umd.js",
+  "jsnext:main": "dist/svg-parser.esm.js",
+  "module": "dist/svg-parser.esm.js",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
-  "author": "Superchupu",
-  "license": "MIT",
-  "keywords": [
-    "glob",
-    "patterns",
-    "fast",
-    "implementation"
-  ],
+  "scripts": {
+    "test": "mocha",
+    "build": "rm -rf dist && rollup -c",
+    "pretest": "npm run build",
+    "prepublish": "npm run lint && npm test",
+    "lint": "eslint src"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "useTabs": true,
+    "printWidth": 100
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SuperchupuDev/tinyglobby.git"
+    "url": "git+https://github.com/Rich-Harris/svg-parser.git"
   },
+  "keywords": [
+    "SVG",
+    "parser",
+    "JSON",
+    "object"
+  ],
+  "author": "Rich Harris",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/SuperchupuDev/tinyglobby/issues"
+    "url": "https://github.com/Rich-Harris/svg-parser/issues"
   },
-  "homepage": "https://superchupu.dev/tinyglobby",
-  "funding": {
-    "url": "https://github.com/sponsors/SuperchupuDev"
-  },
-  "dependencies": {
-    "fdir": "^6.5.0",
-    "picomatch": "^4.0.4"
-  },
+  "homepage": "https://github.com/Rich-Harris/svg-parser#README",
   "devDependencies": {
-    "@biomejs/biome": "^2.4.10",
-    "@types/node": "^25.5.2",
-    "@types/picomatch": "^4.0.3",
-    "fast-glob": "^3.3.3",
-    "fs-fixture": "^2.13.0",
-    "glob": "^13.0.6",
-    "tinybench": "^6.0.0",
-    "tsdown": "^0.21.7",
-    "typescript": "^6.0.2"
-  },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "publishConfig": {
-    "provenance": true
-  },
-  "scripts": {
-    "bench": "node benchmark/bench.ts",
-    "bench:setup": "node benchmark/setup.ts",
-    "build": "tsdown",
-    "check": "biome check",
-    "check:fix": "biome check --write --unsafe",
-    "format": "biome format --write",
-    "lint": "biome lint",
-    "test": "node --test \"test/**/*.ts\"",
-    "test:coverage": "node --test --experimental-test-coverage \"test/**/*.ts\"",
-    "test:only": "node --test --test-only \"test/**/*.ts\"",
-    "typecheck": "tsc --noEmit"
+    "@rollup/plugin-buble": "^0.21.0",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "eslint": "^3.2.2",
+    "locate-character": "^2.0.5",
+    "mocha": "^3.0.1",
+    "prettier": "^1.18.2",
+    "rollup": "^1.29.0",
+    "source-map-support": "^0.4.2"
   }
 }
