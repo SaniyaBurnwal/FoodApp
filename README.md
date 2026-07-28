@@ -1,40 +1,46 @@
-<p align="center">
-  <a href="https://tailwindcss.com" target="_blank">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
-      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
-    </picture>
-  </a>
-</p>
+# String.prototype.trimStart <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
-<p align="center">
-  A utility-first CSS framework for rapidly building custom user interfaces.
-</p>
+[![github actions][actions-image]][actions-url]
+[![coverage][codecov-image]][codecov-url]
+[![dependency status][deps-svg]][deps-url]
+[![dev dependency status][dev-deps-svg]][dev-deps-url]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][downloads-url]
 
-<p align="center">
-    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=main" alt="Build Status"></a>
-    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
-    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
-    <a href="https://github.com/tailwindcss/tailwindcss/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
-</p>
+[![npm badge][npm-badge-png]][package-url]
 
----
+An ES2019-spec-compliant `String.prototype.trimStart` shim. Invoke its "shim" method to shim `String.prototype.trimStart` if it is unavailable.
 
-## Documentation
+This package implements the [es-shim API](https://github.com/es-shims/api) interface. It works in an ES3-supported environment and complies with the [spec](https://www.ecma-international.org/ecma-262/6.0/#sec-object.assign). In an ES6 environment, it will also work properly with `Symbol`s.
 
-For full documentation, visit [tailwindcss.com](https://tailwindcss.com/).
+Most common usage:
+```js
+var trimStart = require('string.prototype.trimstart');
 
-## Community
+assert(trimStart(' \t\na \t\n') === 'a \t\n');
 
-For help, discussion about best practices, or any other conversation that would benefit from being searchable:
+if (!String.prototype.trimStart) {
+	trimStart.shim();
+}
 
-[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+assert(trimStart(' \t\na \t\n') === ' \t\na \t\n'.trimStart());
+```
 
-For casual chit-chat with others using the framework:
+## Tests
+Simply clone the repo, `npm install`, and run `npm test`
 
-[Join the Tailwind CSS Discord Server](https://discord.gg/7NF8GNe)
-
-## Contributing
-
-If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/main/.github/CONTRIBUTING.md) **before submitting a pull request**.
+[package-url]: https://npmjs.com/package/string.prototype.trimstart
+[npm-version-svg]: https://vb.teelaun.ch/es-shims/String.prototype.trimStart.svg
+[deps-svg]: https://david-dm.org/es-shims/String.prototype.trimStart.svg
+[deps-url]: https://david-dm.org/es-shims/String.prototype.trimStart
+[dev-deps-svg]: https://david-dm.org/es-shims/String.prototype.trimStart/dev-status.svg
+[dev-deps-url]: https://david-dm.org/es-shims/String.prototype.trimStart#info=devDependencies
+[npm-badge-png]: https://nodei.co/npm/string.prototype.trimstart.png?downloads=true&stars=true
+[license-image]: https://img.shields.io/npm/l/string.prototype.trimstart.svg
+[license-url]: LICENSE
+[downloads-image]: https://img.shields.io/npm/dm/string.prototype.trimstart.svg
+[downloads-url]: https://npm-stat.com/charts.html?package=string.prototype.trimstart
+[codecov-image]: https://codecov.io/gh/es-shims/String.prototype.trimStart/branch/main/graphs/badge.svg
+[codecov-url]: https://app.codecov.io/gh/es-shims/String.prototype.trimStart/
+[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/es-shims/String.prototype.trimStart
+[actions-url]: https://github.com/es-shims/String.prototype.trimStart/actions

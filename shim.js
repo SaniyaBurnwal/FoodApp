@@ -1,17 +1,14 @@
 'use strict';
 
-var util = require('util');
+var define = require('define-properties');
 var getPolyfill = require('./polyfill');
 
-module.exports = function shimUtilPromisify() {
+module.exports = function shimTrimStart() {
 	var polyfill = getPolyfill();
-	if (polyfill !== util.promisify) {
-		Object.defineProperty(util, 'promisify', {
-			configurable: true,
-			enumerable: true,
-			value: polyfill,
-			writable: true
-		});
-	}
+	define(
+		String.prototype,
+		{ trimStart: polyfill },
+		{ trimStart: function () { return String.prototype.trimStart !== polyfill; } }
+	);
 	return polyfill;
 };

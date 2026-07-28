@@ -1,13 +1,23 @@
 'use strict';
-const fs = require('fs');
-const os = require('os');
 
-const tempDirectorySymbol = Symbol.for('__RESOLVED_TEMP_DIRECTORY__');
+var callBind = require('call-bind');
+var define = require('define-properties');
+var RequireObjectCoercible = require('es-object-atoms/RequireObjectCoercible');
 
-if (!global[tempDirectorySymbol]) {
-	Object.defineProperty(global, tempDirectorySymbol, {
-		value: fs.realpathSync(os.tmpdir())
-	});
-}
+var implementation = require('./implementation');
+var getPolyfill = require('./polyfill');
+var shim = require('./shim');
 
-module.exports = global[tempDirectorySymbol];
+var bound = callBind(getPolyfill());
+var boundMethod = function trim(receiver) {
+	RequireObjectCoercible(receiver);
+	return bound(receiver);
+};
+
+define(boundMethod, {
+	getPolyfill: getPolyfill,
+	implementation: implementation,
+	shim: shim
+});
+
+module.exports = boundMethod;

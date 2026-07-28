@@ -1,18 +1,22 @@
 /**
-Get the real path of the system temp directory.
+Get the real length of a string - by correctly counting astral symbols and ignoring [ansi escape codes](https://github.com/sindresorhus/strip-ansi).
+
+`String#length` erroneously counts [astral symbols](https://web.archive.org/web/20150721114550/http://www.tlg.uci.edu/~opoudjis/unicode/unicode_astral.html) as two characters.
 
 @example
 ```
-import * as os from 'os';
-import tempDirectory = require('temp-dir');
+import stringLength = require('string-length');
 
-console.log(tempDirectory);
-//=> '/private/var/folders/3x/jf5977fn79jbglr7rk0tq4d00000gn/T'
+'🐴'.length;
+//=> 2
 
-console.log(os.tmpdir());
-//=> '/var/folders/3x/jf5977fn79jbglr7rk0tq4d00000gn/T' // <= Symlink
+stringLength('🐴');
+//=> 1
+
+stringLength('\u001B[1municorn\u001B[22m');
+//=> 7
 ```
 */
-declare const tempDirectory: string;
+declare function stringLength(string: string): number;
 
-export = tempDirectory;
+export = stringLength;

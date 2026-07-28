@@ -4,10 +4,21 @@
 	"extends": "@ljharb",
 
 	"rules": {
+		"id-length": "off",
 		"new-cap": ["error", {
 			"capIsNewExceptions": [
-				"GetIntrinsic",
+				"RequireObjectCoercible",
 			],
 		}],
 	},
+
+	"overrides": [
+		{
+			"files": "test/**",
+			"rules": {
+				"id-length": 0,
+				"no-invalid-this": 1,
+			},
+		},
+	],
 }
