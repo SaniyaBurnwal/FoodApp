@@ -1,267 +1,161 @@
-# SPDY Server for node.js
+# shell-quote <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
-[![Build Status](https://travis-ci.org/spdy-http2/node-spdy.svg?branch=master)](http://travis-ci.org/spdy-http2/node-spdy)
-[![NPM version](https://badge.fury.io/js/spdy.svg)](http://badge.fury.io/js/spdy)
-[![dependencies Status](https://david-dm.org/spdy-http2/node-spdy/status.svg?style=flat-square)](https://david-dm.org/spdy-http2/node-spdy)
-[![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com/)
-[![Waffle](https://img.shields.io/badge/track-waffle-blue.svg?style=flat-square)](https://waffle.io/spdy-http2/node-spdy)
+[![github actions][actions-image]][actions-url]
+[![coverage][codecov-image]][codecov-url]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][downloads-url]
 
-With this module you can create [HTTP2][0] / [SPDY][1] servers
-in node.js with natural http module interface and fallback to regular https
-(for browsers that don't support neither HTTP2, nor SPDY yet).
+[![npm badge][npm-badge-png]][package-url]
 
-This module named `spdy` but it [provides](https://github.com/indutny/node-spdy/issues/269#issuecomment-239014184) support for both http/2 (h2) and spdy (2,3,3.1). Also, `spdy` is compatible with Express.
+Parse and quote shell commands.
 
-## Usage
+# example
 
-### Examples
+## quote
 
-Server:
-```javascript
-var spdy = require('spdy'),
-    fs = require('fs');
-
-var options = {
-  // Private key
-  key: fs.readFileSync(__dirname + '/keys/spdy-key.pem'),
-
-  // Fullchain file or cert file (prefer the former)
-  cert: fs.readFileSync(__dirname + '/keys/spdy-fullchain.pem'),
-
-  // **optional** SPDY-specific options
-  spdy: {
-    protocols: [ 'h2', 'spdy/3.1', ..., 'http/1.1' ],
-    plain: false,
-
-    // **optional**
-    // Parse first incoming X_FORWARDED_FOR frame and put it to the
-    // headers of every request.
-    // NOTE: Use with care! This should not be used without some proxy that
-    // will *always* send X_FORWARDED_FOR
-    'x-forwarded-for': true,
-
-    connection: {
-      windowSize: 1024 * 1024, // Server's window size
-
-      // **optional** if true - server will send 3.1 frames on 3.0 *plain* spdy
-      autoSpdy31: false
-    }
-  }
-};
-
-var server = spdy.createServer(options, function(req, res) {
-  res.writeHead(200);
-  res.end('hello world!');
-});
-
-server.listen(3000);
+``` js
+var quote = require('shell-quote/quote');
+var s = quote([ 'a', 'b c d', '$f', '"g"' ]);
+console.log(s);
 ```
 
-Client:
-```javascript
-var spdy = require('spdy');
-var https = require('https');
+output
 
-var agent = spdy.createAgent({
-  host: 'www.google.com',
-  port: 443,
-
-  // Optional SPDY options
-  spdy: {
-    plain: false,
-    ssl: true,
-
-    // **optional** send X_FORWARDED_FOR
-    'x-forwarded-for': '127.0.0.1'
-  }
-});
-
-https.get({
-  host: 'www.google.com',
-  agent: agent
-}, function(response) {
-  console.log('yikes');
-  // Here it goes like with any other node.js HTTP request
-  // ...
-  // And once we're done - we may close TCP connection to server
-  // NOTE: All non-closed requests will die!
-  agent.close();
-}).end();
+```
+a 'b c d' \$f '"g"'
 ```
 
-Please note that if you use a custom agent, by default all connection-level
-errors will result in an uncaught exception. To handle these errors subscribe
-to the `error` event and re-emit the captured error:
+## parse
 
-```javascript
-var agent = spdy.createAgent({
-  host: 'www.google.com',
-  port: 443
-}).once('error', function (err) {
-  this.emit(err);
-});
+``` js
+var parse = require('shell-quote/parse');
+var xs = parse('a "b c" \\$def \'it\\\'s great\'');
+console.dir(xs);
 ```
 
-#### Push streams
+output
 
-It is possible to initiate [PUSH_PROMISE][5] to send content to clients _before_
-the client requests it.
-
-```javascript
-spdy.createServer(options, function(req, res) {
-  var stream = res.push('/main.js', {
-    status: 200, // optional
-    method: 'GET', // optional
-    request: {
-      accept: '*/*'
-    },
-    response: {
-      'content-type': 'application/javascript'
-    }
-  });
-  stream.on('error', function() {
-  });
-  stream.end('alert("hello from push stream!");');
-
-  res.end('<script src="/main.js"></script>');
-}).listen(3000);
+```
+[ 'a', 'b c', '\\$def', 'it\'s great' ]
 ```
 
-[PUSH_PROMISE][5] may be sent using the `push()` method on the current response
-object.  The signature of the `push()` method is:
+## parse with an environment variable
 
-`.push('/some/relative/url', { request: {...}, response: {...} }, callback)`
-
-Second argument contains headers for both PUSH_PROMISE and emulated response.
-`callback` will receive two arguments: `err` (if any error is happened) and a
-[Duplex][4] stream as the second argument.
-
-Client usage:
-```javascript
-var agent = spdy.createAgent({ /* ... */ });
-var req = http.get({
-  host: 'www.google.com',
-  agent: agent
-}, function(response) {
-});
-req.on('push', function(stream) {
-  stream.on('error', function(err) {
-    // Handle error
-  });
-  // Read data from stream
-});
+``` js
+var parse = require('shell-quote/parse');
+var xs = parse('beep --boop="$PWD"', { PWD: '/home/robot' });
+console.dir(xs);
 ```
 
-NOTE: You're responsible for the `stream` object once given it in `.push()`
-callback or `push` event. Hence ignoring `error` event on it will result in
-uncaught exception and crash your program.
+output
 
-#### Trailing headers
-
-Server usage:
-```javascript
-function (req, res) {
-  // Send trailing headers to client
-  res.addTrailers({ header1: 'value1', header2: 'value2' });
-
-  // On client's trailing headers
-  req.on('trailers', function(headers) {
-    // ...
-  });
-}
+```
+[ 'beep', '--boop=/home/robot' ]
 ```
 
-Client usage:
-```javascript
-var req = http.request({ agent: spdyAgent, /* ... */ }).function (res) {
-  // On server's trailing headers
-  res.on('trailers', function(headers) {
-    // ...
-  });
-});
-req.write('stuff');
-req.addTrailers({ /* ... */ });
-req.end();
+## parse with custom escape character
+
+``` js
+var parse = require('shell-quote/parse');
+var xs = parse('beep ^--boop="$PWD"', { PWD: '/home/robot' }, { escape: '^' });
+console.dir(xs);
 ```
 
-#### Options
+output
 
-All options supported by [tls][2] work with node-spdy.
-
-Additional options may be passed via `spdy` sub-object:
-
-* `plain` - if defined, server will ignore NPN and ALPN data and choose whether
-  to use spdy or plain http by looking at first data packet.
-* `ssl` - if `false` and `options.plain` is `true`, `http.Server` will be used
-  as a `base` class for created server.
-* `maxChunk` - if set and non-falsy, limits number of bytes sent in one DATA
-  chunk. Setting it to non-zero value is recommended if you care about
-  interleaving of outgoing data from multiple different streams.
-  (defaults to 8192)
-* `protocols` - list of NPN/ALPN protocols to use (default is:
-  `['h2','spdy/3.1', 'spdy/3', 'spdy/2','http/1.1', 'http/1.0']`)
-* `protocol` - use specific protocol if no NPN/ALPN ex In addition,
-* `maxStreams` - set "[maximum concurrent streams][3]" protocol option
-
-### API
-
-API is compatible with `http` and `https` module, but you can use another
-function as base class for SPDYServer.
-
-```javascript
-spdy.createServer(
-  [base class constructor, i.e. https.Server],
-  { /* keys and options */ }, // <- the only one required argument
-  [request listener]
-).listen([port], [host], [callback]);
+```
+[ 'beep --boop=/home/robot' ]
 ```
 
-Request listener will receive two arguments: `request` and `response`. They're
-both instances of `http`'s `IncomingMessage` and `OutgoingMessage`. But three
-custom properties are added to both of them: `isSpdy`, `spdyVersion`. `isSpdy`
-is `true` when the request was processed using HTTP2/SPDY protocols, it is
-`false` in case of HTTP/1.1 fallback. `spdyVersion` is either of: `2`, `3`,
-`3.1`, or `4` (for HTTP2).
+## parsing shell operators
 
+``` js
+var parse = require('shell-quote/parse');
+var xs = parse('beep || boop > /byte');
+console.dir(xs);
+```
 
-#### Contributors
+output:
 
-* [Fedor Indutny](https://github.com/indutny)
-* [Chris Strom](https://github.com/eee-c)
-* [François de Metz](https://github.com/francois2metz)
-* [Ilya Grigorik](https://github.com/igrigorik)
-* [Roberto Peon](https://github.com/grmocg)
-* [Tatsuhiro Tsujikawa](https://github.com/tatsuhiro-t)
-* [Jesse Cravens](https://github.com/jessecravens)
+```
+[ 'beep', { op: '||' }, 'boop', { op: '>' }, '/byte' ]
+```
 
-#### LICENSE
+## parsing shell comment
 
-This software is licensed under the MIT License.
+``` js
+var parse = require('shell-quote/parse');
+var xs = parse('beep > boop # > kaboom');
+console.dir(xs);
+```
 
-Copyright Fedor Indutny, 2015.
+output:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to permit
-persons to whom the Software is furnished to do so, subject to the
-following conditions:
+```
+[ 'beep', { op: '>' }, 'boop', { comment: '> kaboom' } ]
+```
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+# methods
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-USE OR OTHER DEALINGS IN THE SOFTWARE.
+``` js
+var quote = require('shell-quote/quote');
+var parse = require('shell-quote/parse');
+```
 
-[0]: https://http2.github.io/
-[1]: http://www.chromium.org/spdy
-[2]: http://nodejs.org/docs/latest/api/tls.html#tls.createServer
-[3]: https://httpwg.github.io/specs/rfc7540.html#SETTINGS_MAX_CONCURRENT_STREAMS
-[4]: https://iojs.org/api/stream.html#stream_class_stream_duplex
-[5]: https://httpwg.github.io/specs/rfc7540.html#PUSH_PROMISE
+## quote(args)
+
+Return a quoted string for the array `args` suitable for using in shell
+commands.
+
+## parse(cmd, env={})
+
+Return an array of arguments from the quoted string `cmd`.
+
+Interpolate embedded bash-style `$VARNAME` and `${VARNAME}` variables with
+the `env` object which like bash will replace undefined variables with `""`.
+
+`env` is usually an object but it can also be a function to perform lookups.
+When `env(key)` returns a string, its result will be output just like `env[key]`
+would. When `env(key)` returns an object, it will be inserted into the result
+array like the operator objects.
+
+When a bash operator is encountered, the element in the array with be an object
+with an `"op"` key set to the operator string. For example:
+
+```
+'beep || boop > /byte'
+```
+
+parses as:
+
+```
+[ 'beep', { op: '||' }, 'boop', { op: '>' }, '/byte' ]
+```
+
+# install
+
+With [npm](http://npmjs.org) do:
+
+```
+npm install shell-quote
+```
+
+# license
+
+MIT
+
+[package-url]: https://npmjs.org/package/shell-quote
+[npm-version-svg]: https://versionbadg.es/ljharb/shell-quote.svg
+[deps-svg]: https://david-dm.org/ljharb/shell-quote.svg
+[deps-url]: https://david-dm.org/ljharb/shell-quote
+[dev-deps-svg]: https://david-dm.org/ljharb/shell-quote/dev-status.svg
+[dev-deps-url]: https://david-dm.org/ljharb/shell-quote#info=devDependencies
+[npm-badge-png]: https://nodei.co/npm/shell-quote.png?downloads=true&stars=true
+[license-image]: https://img.shields.io/npm/l/shell-quote.svg
+[license-url]: LICENSE
+[downloads-image]: https://img.shields.io/npm/dm/shell-quote.svg
+[downloads-url]: https://npm-stat.com/charts.html?package=shell-quote
+[codecov-image]: https://codecov.io/gh/ljharb/shell-quote/branch/main/graphs/badge.svg
+[codecov-url]: https://app.codecov.io/gh/ljharb/shell-quote/
+[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/shell-quote
+[actions-url]: https://github.com/ljharb/shell-quote/actions
