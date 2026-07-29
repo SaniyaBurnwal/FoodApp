@@ -1,155 +1,143 @@
-# stringify-object [![Build Status](https://secure.travis-ci.org/yeoman/stringify-object.svg?branch=master)](http://travis-ci.org/yeoman/stringify-object)
+# stack-utils 
 
-> Stringify an object/array like JSON.stringify just without all the double-quotes
+> Captures and cleans stack traces.
 
-Useful for when you want to get the string representation of an object in a formatted way.
+[![Linux Build](https://travis-ci.org/tapjs/stack-utils.svg?branch=master)](https://travis-ci.org/tapjs/stack-utils) [![Build status](https://ci.appveyor.com/api/projects/status/fb9i157knoixe3iq/branch/master?svg=true)](https://ci.appveyor.com/project/jamestalmage/stack-utils-oiw96/branch/master)  [![Coverage](https://coveralls.io/repos/tapjs/stack-utils/badge.svg?branch=master&service=github)](https://coveralls.io/github/tapjs/stack-utils?branch=master)
 
-It also handles circular references and lets you specify quote type.
 
+Extracted from `lib/stack.js` in the [`node-tap` project](https://github.com/tapjs/node-tap)
 
 ## Install
 
 ```
-$ npm install stringify-object
+$ npm install --save stack-utils
 ```
 
 
 ## Usage
 
 ```js
-const stringifyObject = require('stringify-object');
+const StackUtils = require('stack-utils');
+const stack = new StackUtils({cwd: process.cwd(), internals: StackUtils.nodeInternals()});
 
-const obj = {
-	foo: 'bar',
-	'arr': [1, 2, 3],
-	nested: { hello: "world" }
-};
-
-const pretty = stringifyObject(obj, {
-	indent: '  ',
-	singleQuotes: false
-});
-
-console.log(pretty);
-/*
-{
-	foo: "bar",
-	arr: [
-		1,
-		2,
-		3
-	],
-	nested: {
-		hello: "world"
-	}
-}
-*/
+console.log(stack.clean(new Error().stack));
+// outputs a beautified stack trace
 ```
 
 
 ## API
 
-### stringifyObject(input, [options])
 
-Circular references will be replaced with `"[Circular]"`.
+### new StackUtils([options])
 
-#### input
-
-Type: `Object` `Array`
+Creates a new `stackUtils` instance.
 
 #### options
 
-##### indent
+##### internals
 
-Type: `string`<br>
-Default: `\t`
+Type: `array` of `RegularExpression`s  
 
-Preferred indentation.
+A set of regular expressions that match internal stack stack trace lines which should be culled from the stack trace.
+The default is `StackUtils.nodeInternals()`, this can be disabled by setting `[]` or appended using
+`StackUtils.nodeInternals().concat(additionalRegExp)`.  See also `ignoredPackages`.
 
-##### singleQuotes
+##### ignoredPackages
 
-Type: `boolean`<br>
-Default: `true`
+Type: `array` of `string`s
 
-Set to false to get double-quoted strings.
+An array of npm modules to be culled from the stack trace.  This list will mapped to regular
+expressions and merged with the `internals`.
 
-##### filter(obj, prop)
+Default `''`.
 
-Type: `Function`
+##### cwd
 
-Expected to return a `boolean` of whether to include the property `prop` of the object `obj` in the output.
+Type: `string`
 
-##### transform(obj, prop, originalResult)
+The path to the current working directory. File names in the stack trace will be shown relative to this directory.
 
-Type: `Function`<br>
-Default: `undefined`
+##### wrapCallSite
 
-Expected to return a `string` that transforms the string that resulted from stringifying `obj[prop]`. This can be used to detect special types of objects that need to be stringified in a particular way. The `transform` function might return an alternate string in this case, otherwise returning the `originalResult`.
+Type: `function(CallSite)`
 
-Here's an example that uses the `transform` option to mask fields named "password":
-
-```js
-const obj = {
-	user: 'becky',
-	password: 'secret'
-}
-
-const pretty = stringifyObject(obj, {
-	transform: (obj, prop, originalResult) => {
-		if (prop === 'password') {
-			return originalResult.replace(/\w/g, '*');
-		} else {
-			return originalResult;
-		}
-	}
-});
-
-console.log(pretty);
-/*
-{
-	user: 'becky',
-	password: '******'
-}
-*/
-```
+A mapping function for manipulating CallSites before processing. The first argument is a CallSite instance, and the function should return a modified CallSite. This is useful for providing source map support.
 
 
-##### inlineCharacterLimit
+### StackUtils.nodeInternals()
+
+Returns an array of regular expressions that be used to cull lines from the stack trace that reference common Node.js internal files.
+
+
+### stackUtils.clean(stack, indent = 0)
+
+Cleans up a stack trace by deleting any lines that match the `internals` passed to the constructor, and shortening file names relative to `cwd`.
+
+Returns a `string` with the cleaned up stack (always terminated with a `\n` newline character).
+Spaces at the start of each line are trimmed, indentation can be added by setting `indent` to the desired number of spaces.
+
+#### stack
+
+*Required*  
+Type: `string` or an `array` of `string`s
+
+
+### stackUtils.capture([limit], [startStackFunction])
+
+Captures the current stack trace, returning an array of `CallSite`s. There are good overviews of the available CallSite methods [here](https://github.com/v8/v8/wiki/Stack%20Trace%20API#customizing-stack-traces), and [here](https://github.com/sindresorhus/callsites#api).
+
+#### limit
 
 Type: `number`
+Default: `Infinity`
 
-When set, will inline values up to `inlineCharacterLimit` length for the sake of more terse output.
+Limits the number of lines returned by dropping all lines in excess of the limit. This removes lines from the stack trace.
 
-For example, given the example at the top of the README:
+#### startStackFunction
 
-```js
-const obj = {
-	foo: 'bar',
-	'arr': [1, 2, 3],
-	nested: { hello: "world" }
-};
+Type: `function`
 
-const pretty = stringifyObject(obj, {
-	indent: '  ',
-	singleQuotes: false,
-	inlineCharacterLimit: 12
-});
+The function where the stack trace should start. The first line of the stack trace will be the function that called `startStackFunction`. This removes lines from the end of the stack trace.
 
-console.log(pretty);
-/*
-{
-	foo: "bar",
-	arr: [1, 2, 3],
-	nested: {
-		hello: "world"
-	}
-}
-*/
-```
 
-As you can see, `arr` was printed as a one-liner because its string was shorter than 12 characters.
+### stackUtils.captureString([limit], [startStackFunction])
+
+Captures the current stack trace, cleans it using `stackUtils.clean(stack)`, and returns a string with the cleaned stack trace. It takes the same arguments as `stackUtils.capture`.
+
+
+### stackUtils.at([startStackFunction])
+
+Captures the first line of the stack trace (or the first line after `startStackFunction` if supplied), and returns a `CallSite` like object that is serialization friendly (properties are actual values instead of getter functions). 
+
+The available properties are:
+
+ - `line`: `number` 
+ - `column`: `number`
+ - `file`: `string`
+ - `constructor`: `boolean`
+ - `evalOrigin`: `string`
+ - `native`: `boolean`
+ - `type`: `string`
+ - `function`: `string`
+ - `method`: `string`
+
+### stackUtils.parseLine(line)
+
+Parses a `string` (which should be a single line from a stack trace), and generates an object with the following properties:
+
+ - `line`: `number` 
+ - `column`: `number`
+ - `file`: `string`
+ - `constructor`: `boolean`
+ - `evalOrigin`: `string`
+ - `evalLine`: `number`
+ - `evalColumn`: `number`
+ - `evalFile`: `string`
+ - `native`: `boolean`
+ - `function`: `string`
+ - `method`: `string`
 
 
 ## License
 
-BSD-2-Clause © Yeoman team
+MIT © [Isaac Z. Schlueter](http://github.com/isaacs), [James Talmage](http://github.com/jamestalmage)

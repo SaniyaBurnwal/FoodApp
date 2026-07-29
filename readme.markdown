@@ -1,133 +1,86 @@
-# text-table
+# static-eval
 
-generate borderless text table strings suitable for printing to stdout
+evaluate statically-analyzable expressions
 
-[![build status](https://secure.travis-ci.org/substack/text-table.png)](http://travis-ci.org/substack/text-table)
+[![testling badge](https://ci.testling.com/substack/static-eval.png)](https://ci.testling.com/substack/static-eval)
 
-[![browser support](https://ci.testling.com/substack/text-table.png)](http://ci.testling.com/substack/text-table)
+[![build status](https://secure.travis-ci.org/browserify/static-eval.png)](http://travis-ci.org/browserify/static-eval)
+
+# security
+
+static-eval is like `eval`. It is intended for use in build scripts and code transformations, doing some evaluation at build time—it is **NOT** suitable for handling arbitrary untrusted user input. Malicious user input _can_ execute arbitrary code.
 
 # example
 
-## default align
+``` js
+var evaluate = require('static-eval');
+var parse = require('esprima').parse;
+
+var src = process.argv[2];
+var ast = parse(src).body[0].expression;
+
+console.log(evaluate(ast));
+```
+
+If you stick to simple expressions, the result is statically analyzable:
+
+```
+$ node '7*8+9'
+65
+$ node eval.js '[1,2,3+4*5-(5*11)]'
+[ 1, 2, -32 ]
+```
+
+but if you use statements, undeclared identifiers, or syntax, the result is no
+longer statically analyzable and `evaluate()` returns `undefined`:
+
+```
+$ node eval.js '1+2+3*n'
+undefined
+$ node eval.js 'x=5; x*2'
+undefined
+$ node eval.js '5-4*3'
+-7
+```
+
+You can also declare variables and functions to use in the static evaluation:
 
 ``` js
-var table = require('text-table');
-var t = table([
-    [ 'master', '0123456789abcdef' ],
-    [ 'staging', 'fedcba9876543210' ]
-]);
-console.log(t);
-```
+var evaluate = require('static-eval');
+var parse = require('esprima').parse;
 
-```
-master   0123456789abcdef
-staging  fedcba9876543210
-```
+var src = '[1,2,3+4*10+n,foo(3+5),obj[""+"x"].y]';
+var ast = parse(src).body[0].expression;
 
-## left-right align
-
-``` js
-var table = require('text-table');
-var t = table([
-    [ 'beep', '1024' ],
-    [ 'boop', '33450' ],
-    [ 'foo', '1006' ],
-    [ 'bar', '45' ]
-], { align: [ 'l', 'r' ] });
-console.log(t);
-```
-
-```
-beep   1024
-boop  33450
-foo    1006
-bar      45
-```
-
-## dotted align
-
-``` js
-var table = require('text-table');
-var t = table([
-    [ 'beep', '1024' ],
-    [ 'boop', '334.212' ],
-    [ 'foo', '1006' ],
-    [ 'bar', '45.6' ],
-    [ 'baz', '123.' ]
-], { align: [ 'l', '.' ] });
-console.log(t);
-```
-
-```
-beep  1024
-boop   334.212
-foo   1006
-bar     45.6
-baz    123.
-```
-
-## centered
-
-``` js
-var table = require('text-table');
-var t = table([
-    [ 'beep', '1024', 'xyz' ],
-    [ 'boop', '3388450', 'tuv' ],
-    [ 'foo', '10106', 'qrstuv' ],
-    [ 'bar', '45', 'lmno' ]
-], { align: [ 'l', 'c', 'l' ] });
-console.log(t);
-```
-
-```
-beep    1024   xyz
-boop  3388450  tuv
-foo    10106   qrstuv
-bar      45    lmno
+console.log(evaluate(ast, {
+    n: 6,
+    foo: function (x) { return x * 100 },
+    obj: { x: { y: 555 } }
+}));
 ```
 
 # methods
 
 ``` js
-var table = require('text-table')
+var evaluate = require('static-eval');
 ```
 
-## var s = table(rows, opts={})
+## evaluate(ast, vars={})
 
-Return a formatted table string `s` from an array of `rows` and some options
-`opts`.
+Evaluate the [esprima](https://npmjs.org/package/esprima)-parsed abstract syntax
+tree object `ast` with an optional collection of variables `vars` to use in the
+static expression resolution.
 
-`rows` should be an array of arrays containing strings, numbers, or other
-printable values.
-
-options can be:
-
-* `opts.hsep` - separator to use between columns, default `'  '`
-* `opts.align` - array of alignment types for each column, default `['l','l',...]`
-* `opts.stringLength` - callback function to use when calculating the string length
-
-alignment types are:
-
-* `'l'` - left
-* `'r'` - right
-* `'c'` - center
-* `'.'` - decimal
+If the expression contained in `ast` can't be statically resolved, `evaluate()`
+returns undefined.
 
 # install
 
 With [npm](https://npmjs.org) do:
 
 ```
-npm install text-table
+npm install static-eval
 ```
-
-# Use with ANSI-colors
-
-Since the string length of ANSI color schemes does not equal the length
-JavaScript sees internally it is necessary to pass the a custom string length
-calculator during the main function call.
-
-See the `test/ansi-colors.js` file for an example.
 
 # license
 

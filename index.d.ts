@@ -1,22 +1,9 @@
-/**
-Get the real length of a string - by correctly counting astral symbols and ignoring [ansi escape codes](https://github.com/sindresorhus/strip-ansi).
+export as namespace stable;
+export = stable;
 
-`String#length` erroneously counts [astral symbols](https://web.archive.org/web/20150721114550/http://www.tlg.uci.edu/~opoudjis/unicode/unicode_astral.html) as two characters.
+type Comparator<T> = ((a : T, b : T)=>boolean) | ((a: T, b : T)=>number);
 
-@example
-```
-import stringLength = require('string-length');
-
-'🐴'.length;
-//=> 2
-
-stringLength('🐴');
-//=> 1
-
-stringLength('\u001B[1municorn\u001B[22m');
-//=> 7
-```
-*/
-declare function stringLength(string: string): number;
-
-export = stringLength;
+declare function stable<T>(array : T[], comparator? : Comparator<T>) : T[];
+declare namespace stable {
+    export function inplace<T>(array: T[], comparator? : Comparator<T>) : T[];
+}

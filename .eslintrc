@@ -3,22 +3,12 @@
 
 	"extends": "@ljharb",
 
-	"rules": {
-		"id-length": "off",
-		"new-cap": ["error", {
-			"capIsNewExceptions": [
-				"RequireObjectCoercible",
-			],
-		}],
+	"globals": {
+		"StopIteration": false,
 	},
 
-	"overrides": [
-		{
-			"files": "test/**",
-			"rules": {
-				"id-length": 0,
-				"no-invalid-this": 1,
-			},
-		},
-	],
+	"rules": {
+		"func-name-matching": [2, "always"],
+		"id-length": 0,
+	},
 }
